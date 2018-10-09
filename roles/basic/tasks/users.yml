@@ -1,0 +1,12 @@
+- name: add basic user
+  user:
+    name: "{{ basic_user_name }}"
+    password: "{{ basic_user_pass }}"
+
+- name: check if passwordless sudo is enabled for user
+  stat: path=/etc/sudoers.d/{{ basic_user_name }}
+  register: passwordless_sudo_ready
+
+- name: set up passwordless sudo for user
+  shell: echo "{{ basic_user_name }} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/{{ basic_user_name }} && chmod 0440 /etc/sudoers.d/{{ basic_user_name }}
+  when: passwordless_sudo_ready.stat.exists == False

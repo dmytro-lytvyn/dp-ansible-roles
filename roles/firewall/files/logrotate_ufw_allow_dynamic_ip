@@ -1,0 +1,9 @@
+{{ firewall_dynamic_ip_log_path }} {
+    daily
+    missingok
+    rotate 7
+    compress
+    dateext
+    notifempty
+    nocreate
+} 

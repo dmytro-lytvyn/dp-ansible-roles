@@ -1,0 +1,30 @@
+---
+# Installation versions
+confluent_os_user_name: "confluent"
+confluent_platform_version: "4.1"
+confluent_platform_scala_version: "2.11"
+
+# Installation components
+confluent_platform_install_platform: false
+confluent_platform_install_platform_oss: false
+confluent_platform_install_kafka: false
+confluent_platform_install_control_center: false
+confluent_platform_install_connect_hdfs: false
+confluent_platform_install_connect_jdbc: false
+confluent_platform_install_schema_registry: false
+confluent_platform_install_kafka_rest: false
+confluent_platform_install_support_metrics: false
+confluent_platform_install_librdkafka: false
+confluent_platform_install_avro: false
+confluent_platform_install_libserdes: false
+confluent_platform_install_kafka_python: false
+
+# Host/Port config
+schema_registry_freemyip_domain_name: "SECRET"
+schema_registry_freemyip_domain_token: "SECRET"
+schema_registry_listener_port: 8081
+
+# Environment config
+confluent_schema_registry_zk_port: 2181
+confluent_schema_registry_zk_namespace : "schema_registry"
+confluent_schema_registry_kafka_topic: "_schemas"

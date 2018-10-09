@@ -1,0 +1,13 @@
+# Local ansible config
+ansible.cfg
+hosts
+
+# Real ansible playbook
+data-platform.yml
+data-platform.retry
+
+# Config files folder
+config/
+
+# Photos role folder
+roles/photos/

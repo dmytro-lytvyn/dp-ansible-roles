@@ -1,0 +1,153 @@
+---
+- name: add Schema Registry UI user
+  user:
+    name: "{{ schema_registry_ui_os_user_name }}"
+
+
+# Landoop Schema Registry UI: https://github.com/Landoop/schema-registry-ui
+- name: calculate the checksum of the downloaded Schema Registry UI distro if exists
+  stat:
+    path: /opt/{{ schema_registry_ui_archive_filename }}
+    get_checksum: yes
+    checksum_algorithm: sha256
+  register: schema_registry_ui_distro_local
+
+- name: compare the Schema Registry UI distro checksum
+  set_fact:
+    force_schema_registry_ui_distro_download: "{{ schema_registry_ui_distro_local.stat.checksum != schema_registry_ui_archive_hash_sha256 }}"
+  when: schema_registry_ui_distro_local.stat.exists
+
+- name: download the Schema Registry UI distro if needed
+  get_url:
+    url: "{{ schema_registry_ui_archive_source }}"
+    dest: /opt/{{ schema_registry_ui_archive_filename }}
+    checksum: "sha256:{{ schema_registry_ui_archive_hash_sha256 }}"
+    force:  "{{ force_schema_registry_ui_distro_download | default ('false') }}"
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
+    mode: 0644
+
+- name: check if Schema Registry UI distro is unarchived already
+  stat:
+    path: /opt/schema-registry-ui-{{ schema_registry_ui_version }}
+  register: schema_registry_ui_distro_unarchived
+
+- name: create Schema Registry UI directory
+  file:
+    path: /opt/schema-registry-ui-{{ schema_registry_ui_version }}
+    state: directory
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
+    mode: 0755
+  when: schema_registry_ui_distro_unarchived.stat.exists == False
+
+- name: unpack Schema Registry UI distro archive
+  unarchive:
+    src: /opt/{{ schema_registry_ui_archive_filename }}
+    dest: /opt/schema-registry-ui-{{ schema_registry_ui_version }}
+    remote_src: yes
+    keep_newer: yes
+  when: schema_registry_ui_distro_unarchived.stat.exists == False
+  notify:
+    - restart-service-schema-registry-ui
+
+- name: recursively set Schema Registry UI folder owner
+  file:
+    state: directory
+    path: /opt/schema-registry-ui-{{ schema_registry_ui_version }}
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
+    #mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  when: schema_registry_ui_distro_unarchived.stat.exists == False
+
+- name: create symlink to a generic Schema Registry UI folder
+  file:
+    src: /opt/schema-registry-ui-{{ schema_registry_ui_version }}
+    dest: /opt/schema-registry-ui
+    state: link
+  notify:
+    - restart-service-schema-registry-ui
+
+
+# Caddy web server: https://caddyserver.com
+- name: calculate the checksum of the downloaded Caddy distro if exists
+  stat:
+    path: /opt/{{ caddy_archive_filename }}
+    get_checksum: yes
+    checksum_algorithm: sha256
+  register: caddy_distro_local
+
+- name: compare the Caddy distro checksum
+  set_fact:
+    force_caddy_distro_download: "{{ caddy_distro_local.stat.checksum != caddy_archive_hash_sha256 }}"
+  when: caddy_distro_local.stat.exists
+
+- name: download the Caddy distro if needed
+  get_url:
+    url: "{{ caddy_archive_source }}"
+    dest: /opt/{{ caddy_archive_filename }}
+    checksum: "sha256:{{ caddy_archive_hash_sha256 }}"
+    force:  "{{ force_caddy_distro_download | default ('false') }}"
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
+    mode: 0644
+
+- name: check if Caddy distro is unarchived already
+  stat:
+    path: /opt/caddy_{{ caddy_version }}
+  register: caddy_distro_unarchived
+
+- name: create Caddy directory
+  file:
+    path: /opt/caddy_{{ caddy_version }}
+    state: directory
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
+    mode: 0770
+  when: caddy_distro_unarchived.stat.exists == False
+
+- name: unpack Caddy distro archive
+  unarchive:
+    src: /opt/{{ caddy_archive_filename }}
+    dest: /opt/caddy_{{ caddy_version }}
+    remote_src: yes
+    keep_newer: yes
+  when: caddy_distro_unarchived.stat.exists == False
+  notify:
+    - update-caddy-ports-permissions
+    - restart-service-schema-registry-ui
+
+- name: recursively set Caddy folder owner
+  file:
+    state: directory
+    path: /opt/caddy_{{ caddy_version }}
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
+    #mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  when: caddy_distro_unarchived.stat.exists == False
+
+- name: create symlink to a generic Caddy folder
+  file:
+    src: /opt/caddy_{{ caddy_version }}
+    dest: /opt/caddy
+    state: link
+  notify:
+    - restart-service-schema-registry-ui
+
+- name: create Caddy logs directory
+  file:
+    path: /var/log/caddy
+    state: directory
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
+    mode: 0770
+
+- name: create Caddy SSL certificated directory
+  file:
+    path: /etc/ssl/caddy
+    state: directory
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
+    mode: 0770

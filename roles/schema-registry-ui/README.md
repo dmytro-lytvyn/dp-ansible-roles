@@ -1,0 +1,1 @@
+# Landoop Schema Registry UI

@@ -1,0 +1,10 @@
+---
+- name: register-autostart-service-kafdrop
+  shell: systemctl enable kafdrop
+  notify:
+    - restart-service-kafdrop
+
+- name: restart-service-kafdrop
+  service:
+    name: kafdrop
+    state: restarted

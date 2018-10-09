@@ -1,0 +1,1 @@
+# NiFi role for Ansible

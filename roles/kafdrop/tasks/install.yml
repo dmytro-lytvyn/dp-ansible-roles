@@ -1,0 +1,59 @@
+---
+- name: add Kafdrop user
+  user:
+    name: "{{ kafdrop_os_user_name }}"
+
+- name: install Maven and Git
+  become: yes
+  apt:
+    name: "{{item}}"
+    state: latest
+  with_items:
+    - maven
+    - git
+
+- name: create Kafdrop directory
+  file:
+    path: /opt/kafdrop
+    state: directory
+    owner: "{{ kafdrop_os_user_name }}"
+    group: "{{ kafdrop_os_user_name }}"
+    mode: 0755
+
+- name: check if Kafdrop jar binary exists
+  stat:
+    path: /opt/kafdrop/kafdrop.jar
+  register: kafdrop_jar_binary
+
+- name: clone Kafdrop repo
+  git:
+    repo: https://github.com/HomeAdvisor/Kafdrop.git
+    dest: /opt/kafdrop/Kafdrop
+  become: yes
+  become_user: "{{ kafdrop_os_user_name }}"
+  when: kafdrop_jar_binary.stat.exists == False
+
+- name: build Kafdrop jar binary
+  shell: mvn clean package
+  args:
+    chdir: /opt/kafdrop/Kafdrop/
+  become: yes
+  become_user: "{{ kafdrop_os_user_name }}"
+  when: kafdrop_jar_binary.stat.exists == False
+
+- name: move compiled Kafdrop jar binary and give it a static name
+  shell: mv /opt/kafdrop/Kafdrop/target/kafdrop*.jar /opt/kafdrop/kafdrop.jar
+  become: yes
+  become_user: "{{ kafdrop_os_user_name }}"
+  when: kafdrop_jar_binary.stat.exists == False
+
+- name: copy Kafdrop starter bash script
+  template:
+    src: ../files/kafdrop.sh
+    dest: /opt/kafdrop/kafdrop.sh
+    owner: "{{ kafdrop_os_user_name }}"
+    group: "{{ kafdrop_os_user_name }}"
+    mode: 0755
+  notify:
+    - register-autostart-service-kafdrop
+    - restart-service-kafdrop

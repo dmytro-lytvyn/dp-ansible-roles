@@ -1,0 +1,7 @@
+---
+# Configuration
+letsencrypt_domain_names: '["SECRET", "SECRET"]'
+letsencrypt_notifications_email: "SECRET"
+letsencrypt_truststore_file_name: "truststore.p12"
+letsencrypt_truststore_passwd: "SECRET"
+letsencrypt_renew_log_path: "/var/log/letsencrypt_renew.log"

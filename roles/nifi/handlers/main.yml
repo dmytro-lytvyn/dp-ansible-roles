@@ -1,0 +1,10 @@
+---
+- name: register-autostart-service-nifi
+  shell: systemctl enable nifi
+  notify:
+    - restart-service-nifi
+
+- name: restart-service-nifi
+  service:
+    name: nifi
+    state: restarted

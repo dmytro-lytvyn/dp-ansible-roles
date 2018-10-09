@@ -1,0 +1,30 @@
+---
+- name: copy config file for Schema Registry UI
+  template:
+    src: ../files/env.js
+    dest: /opt/schema-registry-ui-{{ schema_registry_ui_version }}/env.js
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
+    mode: 0644
+  notify:
+    - restart-service-schema-registry-ui
+
+- name: copy config file for Caddy
+  template:
+    src: ../files/caddyfile
+    dest: /opt/caddy_{{ caddy_version }}/caddyfile
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
+    mode: 0644
+  notify:
+    - restart-service-schema-registry-ui
+
+- name: copy Schema Registry UI systemd service file
+  template:
+    src: ../files/schema-registry-ui.service
+    dest: /lib/systemd/system/schema-registry-ui.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - register-autostart-service-schema-registry-ui

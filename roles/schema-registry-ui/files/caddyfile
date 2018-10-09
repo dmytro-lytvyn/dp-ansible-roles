@@ -1,0 +1,4 @@
+0.0.0.0:{{ caddy_listener_port }}
+
+root /opt/schema-registry-ui
+log /var/log/caddy/caddy_access.log

@@ -1,0 +1,7 @@
+- name: disable root login via ssh if it's enabled
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: "PermitRootLogin yes"
+    replace: "PermitRootLogin no"
+  notify:
+    - restart-service-sshd

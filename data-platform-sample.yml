@@ -1,0 +1,126 @@
+---
+- hosts: data-platform
+  become: true
+  roles:
+    - {role: 'basic', tags: 'basic'}
+    - {role: 'firewall', tags: 'firewall'}
+  vars:
+    # Basic
+    basic_user_name: "username"
+    basic_user_pass: "encrypted-password-see-ansible-user-module-docs"
+    # Firewall
+    firewall_open_ip_subnets: '["123.123.123.123/32"]'
+    firewall_dynamic_ip_hostname: "something.freemyip.com" # If you want to allow access from a dynamic IP, otherwise leave undefined
+    firewall_dynamic_ip_scipt_path: "/opt/ufw_allow_dynamic_ip.sh"
+    firewall_dynamic_ip_config_path: "/opt/home_network_dynamic_ip.conf"
+    firewall_dynamic_ip_log_path: "/var/log/ufw_allow_dynamic_ip.log"
+
+
+- hosts: rogue-1
+  become: true
+  roles:
+    - {role: 'letsencrypt-certbot', tags: 'letsencrypt-certbot'}
+  vars:
+    # Configuration
+    letsencrypt_domain_names: '["input.data-platform.example","schema-registry.data-platform.example"]' # If you use freemyip.com for domain names, put them here
+    letsencrypt_notifications_email: "username@gmail.com"
+    letsencrypt_truststore_file_name: "truststore.p12"
+    letsencrypt_truststore_passwd: "SuperSecretPassword"
+    letsencrypt_renew_log_path: "/var/log/letsencrypt_renew.log"
+
+
+- hosts: rogue-1
+  become: true
+  roles:
+    - {role: 'java', tags: 'java'}
+    - {role: 'nifi', tags: 'nifi'}
+  vars:
+    # Installation
+    nifi_os_user_name: "nifi"
+    nifi_version: "1.7.1"
+    nifi_archive_filename: "nifi-{{ nifi_version }}-bin.tar.gz"
+    nifi_archive_source: "http://ftp.fau.de/apache/nifi/{{ nifi_version }}/nifi-{{ nifi_version }}-bin.tar.gz"
+    nifi_archive_hash_sha256: "14441c02c47541981746adc8a6c5d8759a9bf8324a08bc03c8487b1112e2c515"
+
+    # Memory config
+    nifi_jvm_heap_memory_initial: "512m"
+    nifi_jvm_heap_memory_max: "2560m"
+
+    # Host/Port config
+    nifi_freemyip_domain_name: "something.freemyip.com" # Dynamic IP service, leave undefined if not needed
+    nifi_freemyip_domain_token: "something-token" # Dynamic IP service, leave undefined if not needed
+    nifi_domain_name: "input.data-platform.example" # If you use freemyip.com for a domain name, put it here
+    nifi_listener_port: 8443
+    nifi_remote_input_port: 10443
+    nifi_cluster_node_protocol_port: 11443
+
+    # HTTPS config: we'll use the same truststore (storage of trusted authority certificates) as keystore (client key certificates) because we don't use them for authorization
+    nifi_security_truststore_file_name: "truststore.p12"
+    nifi_security_truststore_passwd: "SuperSecretPassword"
+
+    # OAuth config
+    # https://console.developers.google.com/ -> New Project -> APIs and Services -> Credentials
+    # Web application, Authorized redirect URIs: https://{{ nifi_domain_name }}:{{ nifi_listener_port }}/nifi-api/access/oidc/callback
+    nifi_oauth_admin_name: "username@gmail.com"
+    nifi_oauth_client_id: "1234567890.apps.googleusercontent.com"
+    nifi_oauth_client_secret: "OAuthSuperSecret"
+
+    # API open ports
+    firewall_open_ports: '[1337]' # If you need to expose an external API, leave undefined if not needed
+
+
+- hosts: rogue-1
+  become: true
+  roles:
+    - {role: 'confluent-platform', tags: 'confluent-platform'}
+  vars:
+    # Installation versions
+    confluent_os_user_name: "confluent"
+    confluent_platform_version: "4.1"
+    confluent_platform_scala_version: "2.11"
+
+    # Installation components
+    confluent_platform_install_schema_registry: true
+    confluent_platform_install_kafka: true
+
+    # Host/Port config
+    schema_registry_freemyip_domain_name: "something-else.freemyip.com" # Dynamic IP service, leave undefined if not needed
+    schema_registry_freemyip_domain_token: "something-else-token" # Dynamic IP service, leave undefined if not needed
+    schema_registry_listener_port: 8081
+
+    # Environment config
+    confluent_schema_registry_zk_port: 2181
+    confluent_schema_registry_zk_namespace : "schema_registry"
+    confluent_schema_registry_kafka_topic: "_schemas"
+
+
+- hosts: rogue-1
+  become: true
+  roles:
+    - {role: 'schema-registry-ui', tags: 'schema-registry-ui'}
+    - {role: 'kafdrop', tags: 'kafdrop'}
+  vars:
+    # Installation
+    schema_registry_ui_os_user_name: schema_registry_ui
+    schema_registry_ui_version: "0.9.5"
+    schema_registry_ui_archive_filename: "schema-registry-ui-{{ schema_registry_ui_version }}.tar.gz"
+    schema_registry_ui_archive_source: "https://github.com/Landoop/schema-registry-ui/releases/download/v.{{ schema_registry_ui_version }}/schema-registry-ui-{{ schema_registry_ui_version }}.tar.gz"
+    schema_registry_ui_archive_hash_sha256: "ed2e88d0e4d2c3b78ee389d2d1e2a7261b876a193651d1735a64bfdf4ba96a51"
+
+    caddy_version: "0.11.0"
+    caddy_archive_filename: "caddy_v{{ caddy_version }}_linux_amd64.tar.gz"
+    caddy_archive_source: "https://github.com/mholt/caddy/releases/download/v{{ caddy_version }}/caddy_v{{ caddy_version }}_linux_amd64.tar.gz"
+    caddy_archive_hash_sha256: "93e77bdbaba0a2b39f9e1de653d17ab1939491f7727948ec65750b4996d07c18"
+
+    # Configuration
+    schema_registry_domain_name: "schema-registry.data-platform.example" # If you use freemyip.com for a domain name, put it here
+    schema_registry_listener_port : 8081
+    caddy_listener_port: 8000
+
+    # Kafdrop configuration
+    kafdrop_os_user_name: "kafdrop"
+
+    # Environment config
+    kafdrop_zookeeper_host_name: "localhost"
+    kafdrop_zookeeper_port: 2181
+

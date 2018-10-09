@@ -1,0 +1,17 @@
+- name: install tools
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - htop
+    - screen
+    - curl
+
+- name: install mc
+  apt:
+    name: mc
+    state: present
+  notify:
+    - config-mc-create-dir
+    - config-mc-copy-ini
+    - config-mc-copy-panels

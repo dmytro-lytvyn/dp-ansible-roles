@@ -1,0 +1,11 @@
+---
+- name: add Confluent's public key
+  apt_key:
+    url: http://packages.confluent.io/deb/{{ confluent_platform_version }}/archive.key
+    state: present
+
+- name: add Confluent's .deb repository
+  apt_repository:
+    repo: "deb http://packages.confluent.io/deb/{{ confluent_platform_version }} stable main"
+    state: present
+    update_cache: true

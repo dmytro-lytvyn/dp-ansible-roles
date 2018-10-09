@@ -1,0 +1,7 @@
+---
+# Configuration
+kafdrop_os_user_name: "kafdrop"
+
+# Environment config
+kafdrop_zookeeper_host_name: "localhost"
+kafdrop_zookeeper_port: 2181

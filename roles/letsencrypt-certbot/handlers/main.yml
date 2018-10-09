@@ -1,0 +1,6 @@
+---
+- name: generate-truststore-file
+  shell: openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out {{ letsencrypt_truststore_file_name }} -name {{ letsencrypt_domain_name }} -passout pass:{{ letsencrypt_truststore_passwd }}
+  args:
+    chdir: /etc/letsencrypt/live/{{ letsencrypt_domain_name }}
+

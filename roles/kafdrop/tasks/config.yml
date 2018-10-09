@@ -1,0 +1,9 @@
+- name: copy a Kafdrop systemd service file
+  template:
+    src: ../files/kafdrop.service
+    dest: /lib/systemd/system/kafdrop.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - register-autostart-service-kafdrop

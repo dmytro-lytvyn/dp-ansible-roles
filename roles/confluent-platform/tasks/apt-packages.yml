@@ -1,0 +1,91 @@
+---
+- name: install confluent-platform
+  apt:
+    name: "confluent-platform-{{ confluent_platform_scala_version }}"
+    state: latest
+  when: confluent_platform_install_platform == true
+
+- name: install confluent-platform-oss
+  apt:
+    name: "confluent-platform-oss-{{ confluent_platform_scala_version }}"
+    state: latest
+  when: confluent_platform_install_platform_oss == true
+
+- name: install confluent-kafka
+  apt:
+    name: "confluent-kafka-{{ confluent_platform_scala_version }}"
+    state: latest
+  when: confluent_platform_install_kafka == true
+  notify:
+    - set-var-lib-zookeeper-owner-kafka
+    - set-var-lib-kafka-owner-kafka
+    - set-var-log-kafka-owner-kafka
+    - set-var-log-confluent-owner-kafka
+    - register-autostart-service-confluent-zookeeper
+    - restart-service-confluent-zookeeper
+    - register-autostart-service-confluent-kafka
+    - restart-service-confluent-kafka
+
+- name: install confluent-control-center
+  apt:
+    name: "confluent-control-center"
+    state: latest
+  when: confluent_platform_install_control_center == true
+
+- name: install confluent-kafka-connect-hdfs
+  apt:
+    name: confluent-kafka-connect-hdfs
+    state: latest
+  when: confluent_platform_install_connect_hdfs == true
+
+- name: install confluent-kafka-connect-jdbc
+  apt:
+    name: confluent-kafka-connect-jdbc
+    state: latest
+  when: confluent_platform_install_connect_jdbc == true
+
+- name: install confluent-schema-registry
+  apt:
+    name: confluent-schema-registry
+    state: latest
+  when: confluent_platform_install_schema_registry == true
+  notify:
+    - set-var-log-confluent-owner-schema-registry
+    - register-autostart-service-confluent-schema-registry
+    - restart-service-confluent-schema-registry
+
+- name: install confluent-kafka-rest
+  apt:
+    name: confluent-kafka-rest
+    state: latest
+  when: confluent_platform_install_kafka_rest == true
+
+- name: install confluent-support_metrics
+  apt:
+    name: confluent-support-metrics
+    state: latest
+  when: confluent_platform_install_support_metrics == true
+
+- name: install confluent-librdkafka
+  apt:
+    name: confluent-librdkafka
+    state: latest
+  when: confluent_platform_install_librdkafka == true
+
+- name: install avro
+  apt:
+    name: avro
+    state: latest
+  when: confluent_platform_install_avro == true
+
+- name: install confluent-libserdes
+  apt:
+    name: confluent-libserdes
+    state: latest
+  when: confluent_platform_install_libserdes == true
+
+- name: install confluent-kafka-python
+  apt:
+    name: confluent-kafka-python
+    state: latest
+  when: confluent_platform_install_kafka_python == true

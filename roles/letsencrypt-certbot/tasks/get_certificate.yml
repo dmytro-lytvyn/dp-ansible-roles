@@ -1,0 +1,11 @@
+- name: check if {{ letsencrypt_domain_name }} domain certificate obtained already
+  stat:
+    path: /etc/letsencrypt/live/{{ letsencrypt_domain_name }}
+  register: letsencrypt_cert_obtained
+
+- name: obtain {{ letsencrypt_domain_name }} domain certificate
+  shell: ufw disable && certbot certonly --standalone -d {{ letsencrypt_domain_name }} --non-interactive --agree-tos -m {{ letsencrypt_notifications_email }} && ufw --force enable
+  when: letsencrypt_cert_obtained.stat.exists == False
+  notify:
+    - generate-truststore-file
+

@@ -1,0 +1,41 @@
+---
+- name: config-mc-create-dir
+  file:
+    path: "{{ item.home }}/.config/mc"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    state: directory
+    mode: 0700
+  notify:
+    - config-mc-copy-ini
+    - config-mc-copy-panels
+  with_items:
+    - { home: "/home/{{ basic_user_name }}", user: "{{ basic_user_name }}" }
+    - { home: "/root", user: "root" }
+
+- name: config-mc-copy-ini
+  copy:
+    src: "../files/mc/ini"
+    dest: "{{ item.home }}/.config/mc/ini"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: 0644
+  with_items:
+    - { home: "/home/{{ basic_user_name }}", user: "{{ basic_user_name }}" }
+    - { home: "/root", user: "root" }
+
+- name: config-mc-copy-panels
+  copy:
+    src: "../files/mc/panels.ini"
+    dest: "{{ item.home }}/.config/mc/panels.ini"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: 0644
+  with_items:
+    - { home: "/home/{{ basic_user_name }}", user: "{{ basic_user_name }}" }
+    - { home: "/root", user: "root" }
+
+- name: restart-service-sshd
+  service:
+    name: sshd
+    state: restarted

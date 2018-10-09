@@ -1,0 +1,57 @@
+---
+- name: add NiFi user
+  user:
+    name: "{{ nifi_os_user_name }}"
+
+- name: calculate the checksum of the downloaded NiFi distro if exists
+  stat:
+    path: /opt/{{ nifi_archive_filename }}
+    get_checksum: yes
+    checksum_algorithm: sha256
+  register: nifi_distro_local
+
+- name: compare the NiFi distro checksum
+  set_fact:
+    force_nifi_distro_download: "{{ nifi_distro_local.stat.checksum != nifi_archive_hash_sha256 }}"
+  when: nifi_distro_local.stat.exists
+
+- name: download the NiFi distro if needed
+  get_url:
+    url: "{{ nifi_archive_source }}"
+    dest: /opt/{{ nifi_archive_filename }}
+    checksum: "sha256:{{ nifi_archive_hash_sha256 }}"
+    force:  "{{ force_nifi_distro_download | default ('false') }}"
+    owner: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_user_name }}"
+    mode: 0644
+
+- name: check if NiFi distro is unarchived already
+  stat:
+    path: /opt/nifi-{{ nifi_version }}
+  register: nifi_distro_unarchived
+
+- name: unpack NiFi distro archive
+  unarchive:
+    src: /opt/{{ nifi_archive_filename }}
+    dest: /opt/
+    remote_src: yes
+    keep_newer: yes
+  when: nifi_distro_unarchived.stat.exists == False
+
+- name: recursively set NiFi folder owner
+  file:
+    state: directory
+    path: /opt/nifi-{{ nifi_version }}
+    owner: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_user_name }}"
+    #mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  when: nifi_distro_unarchived.stat.exists == False
+
+- name: create symlink to a generic NiFi folder
+  file:
+    src: /opt/nifi-{{ nifi_version }}
+    dest: /opt/nifi
+    state: link
+  notify:
+    - restart-service-nifi

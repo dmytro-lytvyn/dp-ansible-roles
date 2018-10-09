@@ -1,0 +1,18 @@
+---
+# Update low port permissions
+- name: update-caddy-ports-permissions
+  shell: setcap 'cap_net_bind_service=+ep' /opt/caddy/caddy
+  notify:
+    - restart-service-schema-registry-ui
+
+# Register services autostart
+- name: register-autostart-service-schema-registry-ui
+  shell: systemctl enable schema-registry-ui
+  notify:
+    - restart-service-schema-registry-ui
+
+# Restart services
+- name: restart-service-schema-registry-ui
+  service:
+    name: schema-registry-ui
+    state: restarted

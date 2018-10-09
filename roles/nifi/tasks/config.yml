@@ -1,0 +1,67 @@
+---
+- name: copy a NiFi systemd service file
+  template:
+    src: ../files/nifi.service
+    dest: /lib/systemd/system/nifi.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - register-autostart-service-nifi
+
+- name: copy nifi.properties file for NiFi
+  template:
+    src: ../files/nifi.properties
+    dest: /opt/nifi-{{ nifi_version }}/conf/nifi.properties
+    owner: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_user_name }}"
+    mode: 0644
+  notify:
+    - restart-service-nifi
+
+- name: copy bootstrap.conf file for NiFi
+  template:
+    src: ../files/bootstrap.conf
+    dest: /opt/nifi-{{ nifi_version }}/conf/bootstrap.conf
+    owner: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_user_name }}"
+    mode: 0644
+  notify:
+    - restart-service-nifi
+
+- name: copy authorizers.xml file for NiFi
+  template:
+    src: ../files/authorizers.xml
+    dest: /opt/nifi-{{ nifi_version }}/conf/authorizers.xml
+    owner: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_user_name }}"
+    mode: 0644
+  notify:
+    - restart-service-nifi
+
+- name: copy TLS truststore file for NiFi
+  copy:
+    src: /etc/letsencrypt/live/{{ nifi_domain_name }}/{{ nifi_security_truststore_file_name }}
+    dest:  /opt/nifi-{{ nifi_version }}/conf/{{ nifi_security_truststore_file_name }}
+    remote_src: yes
+    owner: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_user_name }}"
+    mode: 0644
+  notify:
+    - restart-service-nifi
+
+- name: open NiFi API endpoint ports in firewall
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  with_items:
+    - "{{ firewall_open_ports }}"
+  when: firewall_open_ports is defined
+
+- name: add a crontab job for a freemyip domain name
+  cron:
+    name: "update {{ nifi_freemyip_domain_name }}"
+    minute: "*/19"
+    job: "curl \"https://freemyip.com/update?token={{ nifi_freemyip_domain_token }}&domain={{ nifi_freemyip_domain_name }}\" > /dev/null 2>&1"
+  when: nifi_freemyip_domain_name is defined and nifi_freemyip_domain_token is defined
+

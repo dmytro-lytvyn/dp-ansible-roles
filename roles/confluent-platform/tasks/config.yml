@@ -1,0 +1,40 @@
+---
+# Not needed?
+#- name: secrets directory for schema-registry
+#  file:
+#    path: /etc/schema-registry/secrets
+#    state: directory
+#    owner: "{{ confluent_os_user_name }}"
+#    group: "{{ confluent_os_user_name }}"
+#    mode: 0777
+#  when: confluent_platform_install_schema_registry == true
+
+- name: apply config for zookeeper
+  template:
+    src: ../files/zookeeper.properties
+    dest: /etc/kafka/zookeeper.properties
+    owner: root
+    group: root
+    mode: 0644
+  when: confluent_platform_install_kafka == true
+  notify:
+    - restart-service-confluent-zookeeper
+    - restart-service-confluent-kafka
+
+- name: apply config for schema-registry
+  template:
+    src: ../files/schema-registry.properties
+    dest: /etc/schema-registry/schema-registry.properties
+    owner: root
+    group: root
+    mode: 0644
+  when: confluent_platform_install_schema_registry == true
+  notify:
+    - restart-service-confluent-schema-registry
+
+- name: add a crontab job for a freemyip domain name
+  cron:
+    name: "update {{ schema_registry_freemyip_domain_name }}"
+    minute: "*/18"
+    job: "curl \"https://freemyip.com/update?token={{ schema_registry_freemyip_domain_token }}&domain={{ schema_registry_freemyip_domain_name }}\" > /dev/null 2>&1"
+  when: schema_registry_freemyip_domain_name is defined and schema_registry_freemyip_domain_token is defined

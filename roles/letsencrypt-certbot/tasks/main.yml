@@ -1,0 +1,33 @@
+- name: add Certbot repository
+  apt_repository:
+    repo: ppa:certbot/certbot
+
+- name: install Certbot package
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - software-properties-common
+    - certbot
+
+- include_tasks: get_certificate.yml
+  with_items: "{{ letsencrypt_domain_names }}"
+  loop_control:
+    loop_var: letsencrypt_domain_name
+
+- name: add a crontab job to reniew all Let's Encrypt certificates
+  cron:
+    name: "renew letsencrypt certificates"
+    month: "*" # 0 0 12 1 * ? (Every month on the 1st, at noon)
+    day: "1"
+    hour: "12"
+    minute: "0"
+    job: "ufw disable && certbot renew --dry-run --non-interactive --agree-tos >> {{ letsencrypt_renew_log_path }} 2>&1 && ufw --force enable"
+
+- name: copy a logrotate file to archive logs of certificates reniew
+  template:
+    src: ../files/logrotate_letsencrypt_renew
+    dest: /etc/logrotate.d/logrotate_letsencrypt_renew
+    owner: root
+    group: root
+    mode: 0644

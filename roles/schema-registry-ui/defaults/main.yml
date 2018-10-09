@@ -1,0 +1,17 @@
+---
+# Installation
+schema_registry_ui_os_user_name: schema_registry_ui
+schema_registry_ui_version: "0.9.5"
+schema_registry_ui_archive_filename: "schema-registry-ui-{{ schema_registry_ui_version }}.tar.gz"
+schema_registry_ui_archive_source: "https://github.com/Landoop/schema-registry-ui/releases/download/v.{{ schema_registry_ui_version }}/schema-registry-ui-{{ schema_registry_ui_version }}.tar.gz"
+schema_registry_ui_archive_hash_sha256: "ed2e88d0e4d2c3b78ee389d2d1e2a7261b876a193651d1735a64bfdf4ba96a51"
+
+caddy_version: "0.11.0"
+caddy_archive_filename: "caddy_v{{ caddy_version }}_linux_amd64.tar.gz"
+caddy_archive_source: "https://github.com/mholt/caddy/releases/download/v{{ caddy_version }}/caddy_v{{ caddy_version }}_linux_amd64.tar.gz"
+caddy_archive_hash_sha256: "93e77bdbaba0a2b39f9e1de653d17ab1939491f7727948ec65750b4996d07c18"
+
+# Configuration
+schema_registry_domain_name: "SECRET"
+schema_registry_listener_port : 8081
+caddy_listener_port: 8000

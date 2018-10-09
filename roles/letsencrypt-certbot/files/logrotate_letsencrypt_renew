@@ -1,0 +1,9 @@
+{{ letsencrypt_renew_log_path }} {
+    size 100k
+    missingok
+    rotate 5
+    compress
+    dateext
+    notifempty
+    nocreate
+} 

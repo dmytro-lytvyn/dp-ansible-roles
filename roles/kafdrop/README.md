@@ -1,0 +1,1 @@
+# Kafdrop role for Ansible

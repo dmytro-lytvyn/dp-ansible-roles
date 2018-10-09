@@ -1,0 +1,45 @@
+- name: enable UFW Firewall and deny everything by default
+  ufw:
+    state: enabled
+    policy: deny
+
+- name: allow all access from RFC1918 (private) networks
+  ufw:
+    rule: allow
+    src: "{{ item }}"
+  with_items:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+
+- name: allow all access from the specified network
+  ufw:
+    rule: allow
+    src: "{{ item }}"
+  with_items:
+    - "{{ firewall_open_ip_subnets }}"
+
+- name: copy a bash script to update ufw firewall rule with a home network dynamic IP
+  template:
+    src: ../files/ufw_allow_dynamic_ip.sh
+    dest: "{{ firewall_dynamic_ip_scipt_path }}"
+    owner: root
+    group: root
+    mode: 0700
+  when: firewall_dynamic_ip_hostname is defined
+
+- name: add a crontab job to update ufw firewall rule with a home network dynamic IP
+  cron:
+    name: "update ufw firewall rule with a dynamic ip"
+    minute: "*/5"
+    job: "{{ firewall_dynamic_ip_scipt_path }} >> {{ firewall_dynamic_ip_log_path }} 2>&1"
+  when: firewall_dynamic_ip_hostname is defined
+
+- name: copy a logrotate file to archive logs of updating firewall rules
+  template:
+    src: ../files/logrotate_ufw_allow_dynamic_ip
+    dest: /etc/logrotate.d/logrotate_ufw_allow_dynamic_ip
+    owner: root
+    group: root
+    mode: 0644
+  when: firewall_dynamic_ip_hostname is defined

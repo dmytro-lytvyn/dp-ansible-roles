@@ -1,0 +1,78 @@
+---
+# Set directories permissions
+- name: set-var-lib-zookeeper-owner-kafka
+  file:
+    state: directory
+    path: /var/lib/zookeeper
+    owner: cp-kafka
+    group: confluent
+    mode: u=rwX,g=rX,o=
+    recurse: yes
+
+- name: set-var-lib-kafka-owner-kafka
+  file:
+    state: directory
+    path: /var/lib/kafka
+    owner: cp-kafka
+    group: confluent
+    mode: u=rwX,g=rX,o=
+    recurse: yes
+
+- name: set-var-log-kafka-owner-kafka
+  file:
+    state: directory
+    path: /var/log/kafka
+    owner: cp-kafka
+    group: confluent
+    mode: u=rwX,g=rX,o=
+    recurse: yes
+
+- name: set-var-log-confluent-owner-kafka
+  file:
+    state: directory
+    path: /var/log/confluent
+    owner: cp-kafka
+    group: confluent
+    mode: u=rwX,g=rX,o=
+    recurse: yes
+
+- name: set-var-log-confluent-owner-schema-registry
+  file:
+    state: directory
+    path: /var/log/confluent
+    owner: cp-schema-registry
+    group: confluent
+    mode: u=rwX,g=rX,o=
+    recurse: yes
+
+# Register services
+- name: register-autostart-service-confluent-zookeeper
+  shell: systemctl enable confluent-zookeeper
+  notify:
+    - restart-service-confluent-zookeeper
+
+- name: register-autostart-service-confluent-kafka
+  shell: systemctl enable confluent-kafka
+  notify:
+    - restart-service-confluent-kafka
+
+- name: register-autostart-service-confluent-schema-registry
+  shell: systemctl enable schema-registry
+  notify:
+    - restart-service-confluent-schema-registry
+
+# Restart services
+- name: restart-service-confluent-zookeeper
+  service:
+    name: confluent-zookeeper
+    state: restarted
+
+- name: restart-service-confluent-kafka
+  service:
+    name: confluent-kafka
+    state: restarted
+
+- name: restart-service-confluent-schema-registry
+  service:
+    name: confluent-schema-registry
+    state: restarted
