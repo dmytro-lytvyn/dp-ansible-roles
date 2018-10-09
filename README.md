@@ -1,7 +1,5 @@
 # Data Platform: Ansible Roles
 
 Test
-
->
-[defaults]
-inventory      = hosts
+> [defaults]
+> inventory      = hosts
