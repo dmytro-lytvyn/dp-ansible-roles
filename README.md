@@ -1,1 +1,7 @@
-# dp-ansible-roles
+# Data Platform: Ansible Roles
+
+Test
+
+>
+[defaults]
+inventory      = hosts
