@@ -64,10 +64,12 @@ Add your remote servers to Ansible hosts file, under data-platform group:
 $ vi hosts
 ```
 
-> [data-platform]
-> photos ansible_host=myhost.example.com ansible_port=55522
-> rogue-1 ansible_host=123.123.123.123
-> rogue-2 ansible_host=123.123.123.124
+```ini
+[data-platform]
+something ansible_host=something.freemyip.com ansible_port=55522 # For a dynamic IP host, non-standard port
+rogue-1 ansible_host=123.123.123.123
+rogue-2 ansible_host=123.123.123.124
+```
 
 Set hosts file location in a local Ansible config:
 
@@ -75,8 +77,10 @@ Set hosts file location in a local Ansible config:
 $ vi ansible.cfg
 ```
 
-> [defaults]
-> inventory      = hosts
+```ini
+[defaults]
+inventory      = hosts
+```
 
 ### Ansible commands
 
