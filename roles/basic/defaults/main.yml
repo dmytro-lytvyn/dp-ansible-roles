@@ -1,4 +1,4 @@
 ---
 # Configuration
-basic_user_name: "SECRET"
-basic_user_pass: "SECRET"
+basic_user_name: "username"
+basic_user_pass: "encrypted-password-see-ansible-user-module-docs"

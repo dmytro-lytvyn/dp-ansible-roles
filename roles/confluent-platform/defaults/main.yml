@@ -20,8 +20,8 @@ confluent_platform_install_libserdes: false
 confluent_platform_install_kafka_python: false
 
 # Host/Port config
-schema_registry_freemyip_domain_name: "SECRET"
-schema_registry_freemyip_domain_token: "SECRET"
+schema_registry_freemyip_domain_name: "something-else.freemyip.com" # Dynamic IP service, leave undefined if not needed
+schema_registry_freemyip_domain_token: "something-else-token" # Dynamic IP service, leave undefined if not needed
 schema_registry_listener_port: 8081
 
 # Environment config

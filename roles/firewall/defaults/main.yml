@@ -1,7 +1,7 @@
 ---
 # Configuration
-firewall_open_ip_subnets: "SECRET"
-firewall_dynamic_ip_hostname: "SECRET"
+firewall_open_ip_subnets: '["123.123.123.123/32"]'
+firewall_dynamic_ip_hostname: "something.freemyip.com" # If you want to allow access from a dynamic IP, otherwise leave undefined
 firewall_dynamic_ip_scipt_path: "/opt/ufw_allow_dynamic_ip.sh"
 firewall_dynamic_ip_config_path: "/opt/home_network_dynamic_ip.conf"
 firewall_dynamic_ip_log_path: "/var/log/ufw_allow_dynamic_ip.log"

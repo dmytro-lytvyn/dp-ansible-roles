@@ -1,7 +1,7 @@
 ---
 # Configuration
-letsencrypt_domain_names: '["SECRET", "SECRET"]'
-letsencrypt_notifications_email: "SECRET"
+letsencrypt_domain_names: '["input.data-platform.example","schema-registry.data-platform.example"]' # If you use freemyip.com for domain names, put them here
+letsencrypt_notifications_email: "username@gmail.com"
 letsencrypt_truststore_file_name: "truststore.p12"
-letsencrypt_truststore_passwd: "SECRET"
+letsencrypt_truststore_passwd: "SuperSecretPassword"
 letsencrypt_renew_log_path: "/var/log/letsencrypt_renew.log"

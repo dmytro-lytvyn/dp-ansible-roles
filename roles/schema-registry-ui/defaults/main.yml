@@ -12,6 +12,6 @@ caddy_archive_source: "https://github.com/mholt/caddy/releases/download/v{{ cadd
 caddy_archive_hash_sha256: "93e77bdbaba0a2b39f9e1de653d17ab1939491f7727948ec65750b4996d07c18"
 
 # Configuration
-schema_registry_domain_name: "SECRET"
+schema_registry_domain_name: "schema-registry.data-platform.example" # If you use freemyip.com for a domain name, put it here
 schema_registry_listener_port : 8081
 caddy_listener_port: 8000

@@ -1,5 +1,5 @@
 ---
-# Configuration
+# Kafdrop configuration
 kafdrop_os_user_name: "kafdrop"
 
 # Environment config

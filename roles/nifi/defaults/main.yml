@@ -11,23 +11,23 @@ nifi_jvm_heap_memory_initial: "512m"
 nifi_jvm_heap_memory_max: "2560m"
 
 # Host/Port config
-nifi_freemyip_domain_name: "SECRET"
-nifi_freemyip_domain_token: "SECRET"
-nifi_domain_name: "SECRET"
+nifi_freemyip_domain_name: "something.freemyip.com" # Dynamic IP service, leave undefined if not needed
+nifi_freemyip_domain_token: "something-token" # Dynamic IP service, leave undefined if not needed
+nifi_domain_name: "input.data-platform.example" # If you use freemyip.com for a domain name, put it here
 nifi_listener_port: 8443
 nifi_remote_input_port: 10443
 nifi_cluster_node_protocol_port: 11443
 
 # HTTPS config: we'll use the same truststore (storage of trusted authority certificates) as keystore (client key certificates) because we don't use them for authorization
 nifi_security_truststore_file_name: "truststore.p12"
-nifi_security_truststore_passwd: "SECRET"
+nifi_security_truststore_passwd: "SuperSecretPassword"
 
 # OAuth config
 # https://console.developers.google.com/ -> New Project -> APIs and Services -> Credentials
-# Web application, Authorized redirect URIs: https://{{ nifi_freemyip_domain_name }}:{{ nifi_listener_port }}/nifi-api/access/oidc/callback
-nifi_oauth_admin_name: "SECRET@gmail.com"
-nifi_oauth_client_id: "SECRET"
-nifi_oauth_client_secret: "SECRET"
+# Web application, Authorized redirect URIs: https://{{ nifi_domain_name }}:{{ nifi_listener_port }}/nifi-api/access/oidc/callback
+nifi_oauth_admin_name: "username@gmail.com"
+nifi_oauth_client_id: "1234567890.apps.googleusercontent.com"
+nifi_oauth_client_secret: "OAuthSuperSecret"
 
 # API open ports
-firewall_open_ports: '[1234]'
+firewall_open_ports: '[1337]' # If you need to expose an external API, leave undefined if not needed
