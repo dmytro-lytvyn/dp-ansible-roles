@@ -19,6 +19,12 @@
   with_items:
     - "{{ firewall_open_ip_subnets }}"
 
+- name: allow all access between the hosts of data platform
+  ufw:
+    rule: allow
+    src: "{{ hostvars[item].ansible_default_ipv4.address }}"
+  with_items: "{{ groups['data-platform'] }}"
+
 - name: copy a bash script to update ufw firewall rule with a home network dynamic IP
   template:
     src: ../files/ufw_allow_dynamic_ip.sh
