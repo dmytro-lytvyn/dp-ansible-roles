@@ -9,7 +9,7 @@
 # Idempotent way to build a /etc/hosts file with Ansible using your Ansible hosts inventory for a source.
 # Will include all hosts the playbook is run on.
 # Inspired from http://xmeblog.blogspot.com/2013/06/ansible-dynamicaly-update-etchosts.html
-- name: build /etc/hosts file
+- name: add all known hosts to each /etc/hosts file
   lineinfile:
       dest: /etc/hosts
       regexp: ^(([0-9]+)(\.|)){4}\W{{ item }}$
@@ -17,3 +17,12 @@
       state: present
   when: hostvars[item].ansible_default_ipv4.address is defined
   with_items: "{{ groups['data-platform'] }}"
+
+- name: set swappiness value via sysctl
+  sysctl:
+    name: vm.swappiness
+    value: 10
+    state: present
+    reload: yes
+  notify:
+    - clear-swap

@@ -39,3 +39,6 @@
   service:
     name: sshd
     state: restarted
+
+- name: clear-swap
+  shell: swapoff -a && swapon -a
