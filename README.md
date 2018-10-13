@@ -118,7 +118,7 @@ $ vi data-platform.yml
 Run the Ansible playbook for the first time, when no passwordless sudo available, only root user exists (which will add a default user with a passwordless sudo and disable root login):
 
 ```bash
-$ ansible-playbook -u root -K data-platform.yml
+$ ansible-playbook -u root data-platform.yml
 ```
 
 For every consequent run, as a normal user, without a password:
