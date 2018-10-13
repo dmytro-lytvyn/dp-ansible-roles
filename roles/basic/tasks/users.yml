@@ -1,7 +1,14 @@
 - name: add basic user
   user:
     name: "{{ basic_user_name }}"
+    shell: /bin/bash
     password: "{{ basic_user_pass }}"
+
+- name: set authorized key for the basic user copying it from the current user
+  authorized_key:
+    user: "{{ basic_user_name }}"
+    state: present
+    key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
 - name: check if passwordless sudo is enabled for user
   stat: path=/etc/sudoers.d/{{ basic_user_name }}
