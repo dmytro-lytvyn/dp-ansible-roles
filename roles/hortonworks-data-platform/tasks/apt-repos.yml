@@ -1,0 +1,13 @@
+---
+- name: add Ambari apt key
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: "{{ hortonworks_ambari_apt_key }}"
+    state: present
+
+- name: add Ambari .deb repository
+  apt_repository:
+    repo: "{{ hortonworks_ambari_apt_repo }}"
+    filename: ambari
+    state: present
+    update_cache: true

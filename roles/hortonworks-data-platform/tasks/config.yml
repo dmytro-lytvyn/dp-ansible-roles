@@ -1,0 +1,59 @@
+---
+- name: update listen_addresses in postgresql.conf
+  lineinfile:
+      dest: /etc/postgresql/{{ hortonworks_postgres_version }}/main/postgresql.conf
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+      state: present
+  notify:
+    - restart-service-postgresql
+  with_items:
+    - { regexp: "^.*listen_addresses", line: "listen_addresses = '*'" }
+
+- name: allow remote connections to postgres in pg_hba.conf
+  lineinfile:
+      dest: /etc/postgresql/{{ hortonworks_postgres_version }}/main/pg_hba.conf
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+      state: present
+  notify:
+    - apply-postgres-config
+  with_items:
+    - { regexp: "^host\\W+all\\W+all\\W+0.0.0.0/0", line: "host    all             all             0.0.0.0/0               md5" }
+    - { regexp: "^host\\W+all\\W+all\\W+::/0", line:      "host    all             all             ::/0                    md5" }
+
+- name: create postgres admin user
+  postgresql_user:
+    name: "{{ hortonworks_postgres_admin_name }}"
+    password: "{{ hortonworks_postgres_admin_password }}"
+    role_attr_flags: SUPERUSER
+  become: true
+  become_user: postgres
+
+- name: create postgres application admin users
+  postgresql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+  become: true
+  become_user: postgres
+  with_items: "{{ hortonworks_postgres_users }}"
+
+- name: create postgres application databases
+  postgresql_db:
+    name: "{{ item.name }}"
+    owner: "{{ item.owner }}"
+  become: true
+  become_user: postgres
+  with_items: "{{ hortonworks_postgres_databases }}"
+
+- name: create postgres application normal users
+  postgresql_user:
+    db: "{{ item.db }}"
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+  become: true
+  become_user: postgres
+  with_items: "{{ hortonworks_postgres_db_users }}"
+
+# ambari-server setup --jdbc-db=postgres --jdbc-driver=/usr/share/java/postgresql.jar
+# export HADOOP_CLASSPATH=${HADOOP_CLASSPATH}:${JAVA_JDBC_LIBS}:/usr/share/java/postgresql.jar

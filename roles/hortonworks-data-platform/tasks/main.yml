@@ -1,0 +1,4 @@
+---
+- include: apt-repos.yml
+- include: apt-packages.yml
+- include: config.yml

@@ -1,0 +1,27 @@
+---
+# Installation versions
+hortonworks_postgres_version: "9.5"
+hortonworks_ambari_apt_key: B9733A7A07513CAD
+hortonworks_ambari_apt_repo: "deb http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.7.1.0 Ambari main" # http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.7.1.0/ambari.list
+#http://public-repo-1.hortonworks.com/HDP/ubuntu16/3.x/updates/3.0.1.0/hdp.list
+
+# Configuration
+hortonworks_postgres_admin_name: "admin"
+hortonworks_postgres_admin_password: "SuperSecretPassword"
+
+hortonworks_postgres_users:
+  - { name: "rangeradmin", password: "SuperSecretPassword" }
+  - { name: "registryadmin", password: "SuperSecretPassword" }
+  - { name: "streamlineadmin", password: "SuperSecretPassword" }
+  - { name: "druidadmin", password: "SuperSecretPassword" }
+  - { name: "supersetadmin", password: "SuperSecretPassword" }
+
+hortonworks_postgres_databases:
+  - { name: "ranger", owner: "rangeradmin" }
+  - { name: "registry", owner: "registryadmin" }
+  - { name: "streamline", owner: "streamlineadmin" }
+  - { name: "druid", owner: "druidadmin" }
+  - { name: "superset", owner: "supersetadmin" }
+
+hortonworks_postgres_db_users:
+    - { db: "ranger", name: "rangeruser", password: "SuperSecretPassword" }

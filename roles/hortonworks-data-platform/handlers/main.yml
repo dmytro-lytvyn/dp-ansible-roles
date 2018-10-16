@@ -1,0 +1,13 @@
+---
+- name: register-autostart-service-ntp
+  shell: systemctl enable ntp
+
+- name: restart-service-postgresql
+  service:
+    name: postgresql
+    state: restarted
+
+- name: apply-postgres-config
+  shell: pg_ctlcluster {{ hortonworks_postgres_version }} main reload
+  become: yes
+  become_user: postgres

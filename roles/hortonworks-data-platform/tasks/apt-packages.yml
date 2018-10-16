@@ -1,0 +1,22 @@
+---
+- name: install ntp
+  apt:
+    name: ntp
+    state: latest
+  notify:
+    - register-autostart-service-ntp
+
+- name: install postgresql and related libraries
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - postgresql-{{ hortonworks_postgres_version }}
+    - libpq-dev
+    - python-psycopg2
+    - libpostgresql-jdbc-java
+
+- name: install ambari-server
+  apt:
+    name: ambari-server
+    state: latest
