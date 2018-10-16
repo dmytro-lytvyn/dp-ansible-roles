@@ -11,7 +11,3 @@
   apt:
     name: mc
     state: present
-  notify:
-    - config-mc-create-dir
-    - config-mc-copy-ini
-    - config-mc-copy-panels

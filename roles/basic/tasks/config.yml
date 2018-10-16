@@ -1,3 +1,44 @@
+- name: check if mc config directory exists
+  stat:
+    path: "/home/{{ basic_user_name }}/.config/mc"
+  register: mc_config_dir
+
+- name: create mc config directory
+  file:
+    path: "{{ item.home }}/.config/mc"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    state: directory
+    mode: 0700
+  with_items:
+    - { home: "/home/{{ basic_user_name }}", user: "{{ basic_user_name }}" }
+    - { home: "/root", user: "root" }
+  when: mc_config_dir.stat.exists == False
+
+- name: copy mc config ini file
+  copy:
+    src: "../files/mc/ini"
+    dest: "{{ item.home }}/.config/mc/ini"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: 0644
+  with_items:
+    - { home: "/home/{{ basic_user_name }}", user: "{{ basic_user_name }}" }
+    - { home: "/root", user: "root" }
+  when: mc_config_dir.stat.exists == False
+
+- name: copy mc config panels file
+  copy:
+    src: "../files/mc/panels.ini"
+    dest: "{{ item.home }}/.config/mc/panels.ini"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: 0644
+  with_items:
+    - { home: "/home/{{ basic_user_name }}", user: "{{ basic_user_name }}" }
+    - { home: "/root", user: "root" }
+  when: mc_config_dir.stat.exists == False
+
 - name: disable root login via ssh if it's enabled
   replace:
     path: /etc/ssh/sshd_config

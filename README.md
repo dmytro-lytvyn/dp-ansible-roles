@@ -118,7 +118,7 @@ $ vi data-platform.yml
 Run the Ansible playbook for the first time for one of the servers, when no passwordless sudo available, only root user exists (which will add a default user with a passwordless sudo and disable root login), and only the roles specified by tags in a playbook:
 
 ```bash
-$ ansible-playbook --user=root --limit=rogue-1 data-platform.yml --tags "basic,firewall"
+$ ansible-playbook --user=root data-platform.yml --limit=rogue-1 --tags "basic,firewall"
 ```
 
 For every consequent run, as a normal user, without a password, applying all roles defined in a playbook:
