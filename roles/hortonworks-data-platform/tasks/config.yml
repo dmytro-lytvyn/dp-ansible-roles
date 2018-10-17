@@ -1,10 +1,10 @@
 ---
 - name: update listen_addresses in postgresql.conf
   lineinfile:
-      dest: /etc/postgresql/{{ hortonworks_postgres_version }}/main/postgresql.conf
-      regexp: "{{ item.regexp }}"
-      line: "{{ item.line }}"
-      state: present
+    dest: /etc/postgresql/{{ hortonworks_postgres_version }}/main/postgresql.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
   notify:
     - restart-service-postgresql
   with_items:
@@ -12,48 +12,104 @@
 
 - name: allow remote connections to postgres in pg_hba.conf
   lineinfile:
-      dest: /etc/postgresql/{{ hortonworks_postgres_version }}/main/pg_hba.conf
-      regexp: "{{ item.regexp }}"
-      line: "{{ item.line }}"
-      state: present
+    dest: /etc/postgresql/{{ hortonworks_postgres_version }}/main/pg_hba.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
   notify:
     - apply-postgres-config
   with_items:
+    - { regexp: "^local\\W+all\\W+all", line: "local   all             all                                     md5" }
     - { regexp: "^host\\W+all\\W+all\\W+0.0.0.0/0", line: "host    all             all             0.0.0.0/0               md5" }
     - { regexp: "^host\\W+all\\W+all\\W+::/0", line:      "host    all             all             ::/0                    md5" }
 
 - name: create postgres admin user
   postgresql_user:
-    name: "{{ hortonworks_postgres_admin_name }}"
+    name: "{{ hortonworks_postgres_admin_username }}"
     password: "{{ hortonworks_postgres_admin_password }}"
     role_attr_flags: SUPERUSER
   become: true
   become_user: postgres
 
-- name: create postgres application admin users
-  postgresql_user:
-    name: "{{ item.name }}"
-    password: "{{ item.password }}"
+- name: create postgres Ambari database
+  postgresql_db:
+    name: "{{ hortonworks_postgres_ambari_database }}"
   become: true
   become_user: postgres
-  with_items: "{{ hortonworks_postgres_users }}"
+  notify:
+    - populate-postgres-ambari-database
+    - restart-service-ambari-server
 
-- name: create postgres application databases
+- name: create postgres Ambari user
+  postgresql_user:
+    db: "{{ hortonworks_postgres_ambari_database }}"
+    name: "{{ hortonworks_postgres_ambari_username }}"
+    password: "{{ hortonworks_postgres_ambari_password }}"
+    priv: "ALL"
+  become: true
+  become_user: postgres
+  notify:
+    - restart-service-ambari-server
+
+- name: create postgres Ambari schema
+  postgresql_schema:
+    database: "{{ hortonworks_postgres_ambari_database }}"
+    name: "{{ hortonworks_postgres_ambari_schema }}"
+    owner: "{{ hortonworks_postgres_ambari_username }}"
+  become: true
+  become_user: postgres
+  notify:
+    - set-postgres-default-schema-ambari-user
+    - restart-service-ambari-server
+
+- name: create postgres applications databases
   postgresql_db:
     name: "{{ item.name }}"
-    owner: "{{ item.owner }}"
   become: true
   become_user: postgres
   with_items: "{{ hortonworks_postgres_databases }}"
+  notify:
+    - restart-service-ambari-server
 
-- name: create postgres application normal users
+- name: create postgres applications users
   postgresql_user:
     db: "{{ item.db }}"
     name: "{{ item.name }}"
     password: "{{ item.password }}"
+    priv: "{{ item.priv }}"
   become: true
   become_user: postgres
-  with_items: "{{ hortonworks_postgres_db_users }}"
+  with_items: "{{ hortonworks_postgres_users }}"
+  notify:
+    - restart-service-ambari-server
+
+- name: check if Ansible database password file exists
+  stat:
+    path: /etc/ambari-server/conf/password.dat # This file appears only after Ambari DB was configured, and Ambari changes its config file with each run, we don't want to reset it every time
+  register: ansible_database_password_file
+
+- name: set Ambari database password in a file
+  lineinfile:
+    dest: /etc/ambari-server/conf/password.dat
+    line: "{{ hortonworks_postgres_ambari_password }}"
+    state: present
+    create: yes
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - restart-service-ambari-server
+
+- name: apply config for Ambari
+  template:
+    src: ../files/ambari.properties
+    dest: /etc/ambari-server/conf/ambari.properties
+    owner: root
+    group: root
+    mode: 0755
+  notify:
+    - restart-service-ambari-server
+  when: ansible_database_password_file.stat.exists == False
 
 # ambari-server setup --jdbc-db=postgres --jdbc-driver=/usr/share/java/postgresql.jar
 # export HADOOP_CLASSPATH=${HADOOP_CLASSPATH}:${JAVA_JDBC_LIBS}:/usr/share/java/postgresql.jar

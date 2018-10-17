@@ -15,8 +15,12 @@
     - libpq-dev
     - python-psycopg2
     - libpostgresql-jdbc-java
+  notify:
+    - register-autostart-service-postgresql
 
 - name: install ambari-server
   apt:
     name: ambari-server
     state: latest
+  notify:
+    - register-autostart-service-ambari-server

@@ -2,6 +2,9 @@
 - name: register-autostart-service-ntp
   shell: systemctl enable ntp
 
+- name: register-autostart-service-postgresql
+  shell: systemctl enable postgresql
+
 - name: restart-service-postgresql
   service:
     name: postgresql
@@ -11,3 +14,21 @@
   shell: pg_ctlcluster {{ hortonworks_postgres_version }} main reload
   become: yes
   become_user: postgres
+
+- name: set-postgres-default-schema-ambari-user
+  shell: psql -v ON_ERROR_STOP=1 -c "ALTER USER {{ hortonworks_postgres_ambari_username }} SET search_path TO {{ hortonworks_postgres_ambari_schema }};"
+  become: yes
+  become_user: postgres
+
+- name: populate-postgres-ambari-database
+  shell: PGPASSWORD="{{ hortonworks_postgres_ambari_password }}" psql -v ON_ERROR_STOP=1 -U {{ hortonworks_postgres_ambari_username }} -f /var/lib/ambari-server/resources/Ambari-DDL-Postgres-CREATE.sql
+  become: yes
+  become_user: postgres
+
+- name: register-autostart-service-ambari-server
+  shell: systemctl enable ambari-server
+
+- name: restart-service-ambari-server
+  service:
+    name: ambari-server
+    state: restarted

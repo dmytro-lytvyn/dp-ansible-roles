@@ -6,22 +6,25 @@ hortonworks_ambari_apt_repo: "deb http://public-repo-1.hortonworks.com/ambari/ub
 #http://public-repo-1.hortonworks.com/HDP/ubuntu16/3.x/updates/3.0.1.0/hdp.list
 
 # Configuration
-hortonworks_postgres_admin_name: "admin"
+hortonworks_postgres_admin_username: "admin"
 hortonworks_postgres_admin_password: "SuperSecretPassword"
 
-hortonworks_postgres_users:
-  - { name: "rangeradmin", password: "SuperSecretPassword" }
-  - { name: "registryadmin", password: "SuperSecretPassword" }
-  - { name: "streamlineadmin", password: "SuperSecretPassword" }
-  - { name: "druidadmin", password: "SuperSecretPassword" }
-  - { name: "supersetadmin", password: "SuperSecretPassword" }
+hortonworks_postgres_ambari_database: "ambari"
+hortonworks_postgres_ambari_schema: "ambari"
+hortonworks_postgres_ambari_username: "ambari"
+hortonworks_postgres_ambari_password: "SuperSecretPassword"
 
 hortonworks_postgres_databases:
-  - { name: "ranger", owner: "rangeradmin" }
-  - { name: "registry", owner: "registryadmin" }
-  - { name: "streamline", owner: "streamlineadmin" }
-  - { name: "druid", owner: "druidadmin" }
-  - { name: "superset", owner: "supersetadmin" }
+  - { name: "ranger" }
+  - { name: "registry" }
+  - { name: "streamline" }
+  - { name: "druid" }
+  - { name: "superset" }
 
-hortonworks_postgres_db_users:
-    - { db: "ranger", name: "rangeruser", password: "SuperSecretPassword" }
+hortonworks_postgres_users:
+  - { db: "ranger", name: "rangeradmin", password: "SuperSecretPassword", priv: "ALL" }
+  - { db: "ranger", name: "ranger", password: "SuperSecretPassword", priv: "CONNECT" }
+  - { db: "registry", name: "registry", password: "SuperSecretPassword", priv: "CONNECT" }
+  - { db: "streamline", name: "streamline", password: "SuperSecretPassword", priv: "CONNECT" }
+  - { db: "druid", name: "druid", password: "SuperSecretPassword", priv: "CONNECT" }
+  - { db: "superset", name: "superset", password: "SuperSecretPassword", priv: "CONNECT" }
