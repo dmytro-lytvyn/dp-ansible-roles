@@ -137,7 +137,12 @@
     hortonworks_ambari_apt_repo: "deb http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.7.1.0 Ambari main" # http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.7.1.0/ambari.list
     #http://public-repo-1.hortonworks.com/HDP/ubuntu16/3.x/updates/3.0.1.0/hdp.list
 
+    # Installation components
+    hortonworks_ambari_server: true
+    hortonworks_ambari_agent: true
+
     # Configuration
+    hortonworks_ambari_server_hostname: "manager.data-platform.example"
     hortonworks_postgres_admin_username: "admin"
     hortonworks_postgres_admin_password: "SuperSecretPassword"
 
@@ -147,6 +152,7 @@
     hortonworks_postgres_ambari_password: "SuperSecretPassword"
 
     hortonworks_postgres_databases:
+      - { name: "hive" }
       - { name: "ranger" }
       - { name: "registry" }
       - { name: "streamline" }
@@ -154,9 +160,29 @@
       - { name: "superset" }
 
     hortonworks_postgres_users:
+      - { db: "hive", name: "hive", password: "SuperSecretPassword", priv: "ALL" }
       - { db: "ranger", name: "rangeradmin", password: "SuperSecretPassword", priv: "ALL" }
       - { db: "ranger", name: "ranger", password: "SuperSecretPassword", priv: "CONNECT" }
       - { db: "registry", name: "registry", password: "SuperSecretPassword", priv: "CONNECT" }
       - { db: "streamline", name: "streamline", password: "SuperSecretPassword", priv: "CONNECT" }
       - { db: "druid", name: "druid", password: "SuperSecretPassword", priv: "CONNECT" }
       - { db: "superset", name: "superset", password: "SuperSecretPassword", priv: "CONNECT" }
+
+- hosts: rogue-3
+  become: true
+  roles:
+    - {role: 'java', tags: 'java'}
+    - {role: 'hortonworks-data-platform', tags: 'hortonworks-data-platform'}
+  vars:
+    # Installation versions
+    hortonworks_postgres_version: "9.5"
+    hortonworks_ambari_apt_key: B9733A7A07513CAD
+    hortonworks_ambari_apt_repo: "deb http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.7.1.0 Ambari main" # http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.7.1.0/ambari.list
+    #http://public-repo-1.hortonworks.com/HDP/ubuntu16/3.x/updates/3.0.1.0/hdp.list
+
+    # Installation components
+    hortonworks_ambari_server: false
+    hortonworks_ambari_agent: true
+
+    # Configuration
+    hortonworks_ambari_server_hostname: "rogue-2.data-for.me"

@@ -1,10 +1,19 @@
 ---
+#copy /usr/share/java/postgresql.jar to /var/lib/ambari-server/resources/postgresql.jar, symlink /var/lib/ambari-server/resources/postgresql.jar to /var/lib/ambari-server/resources/postgresql-jdbc.jar
+- name: create symlink for Ambari to the installed postgresql-jdbc driver
+  file:
+    src: /usr/share/java/postgresql.jar
+    dest: /var/lib/ambari-server/resources/postgresql-jdbc.jar
+    state: link
+  when: hortonworks_ambari_server == true
+
 - name: update listen_addresses in postgresql.conf
   lineinfile:
     dest: /etc/postgresql/{{ hortonworks_postgres_version }}/main/postgresql.conf
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
+  when: hortonworks_ambari_server == true
   notify:
     - restart-service-postgresql
   with_items:
@@ -16,6 +25,7 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
+  when: hortonworks_ambari_server == true
   notify:
     - apply-postgres-config
   with_items:
@@ -30,12 +40,14 @@
     role_attr_flags: SUPERUSER
   become: true
   become_user: postgres
+  when: hortonworks_ambari_server == true
 
 - name: create postgres Ambari database
   postgresql_db:
     name: "{{ hortonworks_postgres_ambari_database }}"
   become: true
   become_user: postgres
+  when: hortonworks_ambari_server == true
   notify:
     - populate-postgres-ambari-database
     - restart-service-ambari-server
@@ -48,6 +60,7 @@
     priv: "ALL"
   become: true
   become_user: postgres
+  when: hortonworks_ambari_server == true
   notify:
     - restart-service-ambari-server
 
@@ -58,6 +71,7 @@
     owner: "{{ hortonworks_postgres_ambari_username }}"
   become: true
   become_user: postgres
+  when: hortonworks_ambari_server == true
   notify:
     - set-postgres-default-schema-ambari-user
     - restart-service-ambari-server
@@ -68,8 +82,7 @@
   become: true
   become_user: postgres
   with_items: "{{ hortonworks_postgres_databases }}"
-  notify:
-    - restart-service-ambari-server
+  when: hortonworks_ambari_server == true
 
 - name: create postgres applications users
   postgresql_user:
@@ -80,13 +93,13 @@
   become: true
   become_user: postgres
   with_items: "{{ hortonworks_postgres_users }}"
-  notify:
-    - restart-service-ambari-server
+  when: hortonworks_ambari_server == true
 
 - name: check if Ansible database password file exists
   stat:
     path: /etc/ambari-server/conf/password.dat # This file appears only after Ambari DB was configured, and Ambari changes its config file with each run, we don't want to reset it every time
   register: ansible_database_password_file
+  when: hortonworks_ambari_server == true
 
 - name: set Ambari database password in a file
   lineinfile:
@@ -97,19 +110,31 @@
     owner: root
     group: root
     mode: 0640
+  when: hortonworks_ambari_server == true
   notify:
     - restart-service-ambari-server
 
-- name: apply config for Ambari
+- name: apply config for Ambari Server
   template:
     src: ../files/ambari.properties
     dest: /etc/ambari-server/conf/ambari.properties
     owner: root
     group: root
     mode: 0755
+  when: hortonworks_ambari_server == true and ansible_database_password_file.stat.exists == False
   notify:
     - restart-service-ambari-server
-  when: ansible_database_password_file.stat.exists == False
+
+- name: apply config for Ambari Agent
+  template:
+    src: ../files/ambari-agent.ini
+    dest: /etc/ambari-agent/conf/ambari-agent.ini
+    owner: root
+    group: root
+    mode: 0644
+  when: hortonworks_ambari_agent == true
+  notify:
+    - restart-service-ambari-agent
 
 # ambari-server setup --jdbc-db=postgres --jdbc-driver=/usr/share/java/postgresql.jar
 # export HADOOP_CLASSPATH=${HADOOP_CLASSPATH}:${JAVA_JDBC_LIBS}:/usr/share/java/postgresql.jar

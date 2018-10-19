@@ -32,3 +32,11 @@
   service:
     name: ambari-server
     state: restarted
+
+- name: register-autostart-service-ambari-agent
+  shell: systemctl enable ambari-agent
+
+- name: restart-service-ambari-agent
+  service:
+    name: ambari-agent
+    state: restarted

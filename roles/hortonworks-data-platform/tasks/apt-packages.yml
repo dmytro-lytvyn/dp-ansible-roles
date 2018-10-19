@@ -15,6 +15,7 @@
     - libpq-dev
     - python-psycopg2
     - libpostgresql-jdbc-java
+  when: hortonworks_ambari_server == true
   notify:
     - register-autostart-service-postgresql
 
@@ -22,5 +23,16 @@
   apt:
     name: ambari-server
     state: latest
+  when: hortonworks_ambari_server == true
   notify:
     - register-autostart-service-ambari-server
+    - restart-service-ambari-server
+
+- name: install ambari-agent
+  apt:
+    name: ambari-agent
+    state: latest
+  when: hortonworks_ambari_agent == true
+  notify:
+    - register-autostart-service-ambari-agent
+    - restart-service-ambari-agent
