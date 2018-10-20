@@ -5,6 +5,7 @@
     state: latest
   notify:
     - register-autostart-service-ntp
+    - start-service-ntp
 
 - name: install postgresql and related libraries
   apt:
@@ -18,6 +19,7 @@
   when: hortonworks_ambari_server == true
   notify:
     - register-autostart-service-postgresql
+    - start-service-postgresql
 
 - name: install ambari-server
   apt:
@@ -26,7 +28,7 @@
   when: hortonworks_ambari_server == true
   notify:
     - register-autostart-service-ambari-server
-    - restart-service-ambari-server
+    - start-service-ambari-server
 
 - name: install ambari-agent
   apt:
@@ -35,4 +37,4 @@
   when: hortonworks_ambari_agent == true
   notify:
     - register-autostart-service-ambari-agent
-    - restart-service-ambari-agent
+    - start-service-ambari-agent

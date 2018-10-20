@@ -25,7 +25,7 @@
     letsencrypt_domain_names: '["input.data-platform.example","schema-registry.data-platform.example"]' # If you use freemyip.com for domain names, put them here
     letsencrypt_notifications_email: "username@gmail.com"
     letsencrypt_truststore_file_name: "truststore.p12"
-    letsencrypt_truststore_passwd: "SuperSecretPassword"
+    letsencrypt_truststore_passwd: "Password_123"
     letsencrypt_renew_log_path: "/var/log/letsencrypt_renew.log"
 
 
@@ -56,7 +56,7 @@
 
     # HTTPS config: we'll use the same truststore (storage of trusted authority certificates) as keystore (client key certificates) because we don't use them for authorization
     nifi_security_truststore_file_name: "truststore.p12"
-    nifi_security_truststore_passwd: "SuperSecretPassword"
+    nifi_security_truststore_passwd: "Password_123"
 
     # OAuth config
     # https://console.developers.google.com/ -> New Project -> APIs and Services -> Credentials
@@ -144,12 +144,12 @@
     # Configuration
     hortonworks_ambari_server_hostname: "manager.data-platform.example"
     hortonworks_postgres_admin_username: "admin"
-    hortonworks_postgres_admin_password: "SuperSecretPassword"
+    hortonworks_postgres_admin_password: "Password_123"
 
     hortonworks_postgres_ambari_database: "ambari"
     hortonworks_postgres_ambari_schema: "ambari"
     hortonworks_postgres_ambari_username: "ambari"
-    hortonworks_postgres_ambari_password: "SuperSecretPassword"
+    hortonworks_postgres_ambari_password: "Password_123"
 
     hortonworks_postgres_databases:
       - { name: "hive" }
@@ -160,10 +160,10 @@
       - { name: "superset" }
 
     hortonworks_postgres_users:
-      - { db: "hive", name: "hive", password: "SuperSecretPassword", priv: "ALL" }
-      - { db: "ranger", name: "rangeradmin", password: "SuperSecretPassword", priv: "ALL" }
-      - { db: "ranger", name: "ranger", password: "SuperSecretPassword", priv: "CONNECT" }
-      - { db: "registry", name: "registry", password: "SuperSecretPassword", priv: "CONNECT" }
-      - { db: "streamline", name: "streamline", password: "SuperSecretPassword", priv: "CONNECT" }
-      - { db: "druid", name: "druid", password: "SuperSecretPassword", priv: "CONNECT" }
-      - { db: "superset", name: "superset", password: "SuperSecretPassword", priv: "CONNECT" }
+      - { db: "hive", name: "hive", password: "Password_123", priv: "ALL" }
+      - { db: "ranger", name: "rangeradmin", password: "Password_123", priv: "ALL" }
+      - { db: "ranger", name: "ranger", password: "Password_123", priv: "CONNECT" }
+      - { db: "registry", name: "registry", password: "Password_123", priv: "CONNECT" }
+      - { db: "streamline", name: "streamline", password: "Password_123", priv: "CONNECT" }
+      - { db: "druid", name: "druid", password: "Password_123", priv: "CONNECT" }
+      - { db: "superset", name: "superset", password: "Password_123", priv: "CONNECT" }

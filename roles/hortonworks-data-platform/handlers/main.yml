@@ -2,6 +2,12 @@
 - name: register-autostart-service-ntp
   shell: systemctl enable ntp
 
+- name: start-service-ntp
+  service:
+    name: ntp
+    state: started
+
+
 - name: register-autostart-service-postgresql
   shell: systemctl enable postgresql
 
@@ -9,6 +15,12 @@
   service:
     name: postgresql
     state: restarted
+
+- name: start-service-postgresql
+  service:
+    name: postgresql
+    state: started
+
 
 - name: apply-postgres-config
   shell: pg_ctlcluster {{ hortonworks_postgres_version }} main reload
@@ -25,6 +37,7 @@
   become: yes
   become_user: postgres
 
+
 - name: register-autostart-service-ambari-server
   shell: systemctl enable ambari-server
 
@@ -33,6 +46,12 @@
     name: ambari-server
     state: restarted
 
+- name: start-service-ambari-server
+  service:
+    name: ambari-server
+    state: started
+
+
 - name: register-autostart-service-ambari-agent
   shell: systemctl enable ambari-agent
 
@@ -40,3 +59,8 @@
   service:
     name: ambari-agent
     state: restarted
+
+- name: start-service-ambari-agent
+  service:
+    name: ambari-agent
+    state: started

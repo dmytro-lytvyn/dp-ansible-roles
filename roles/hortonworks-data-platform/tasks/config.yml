@@ -1,18 +1,6 @@
 ---
-#copy /usr/share/java/postgresql.jar to /var/lib/ambari-server/resources/postgresql.jar, symlink /var/lib/ambari-server/resources/postgresql.jar to /var/lib/ambari-server/resources/postgresql-jdbc.jar
-- name: create symlink 1 for Ambari to the installed postgresql-jdbc driver
-  file:
-    src: /usr/share/java/postgresql.jar
-    dest: /var/lib/ambari-server/resources/postgresql-jdbc.jar
-    state: link
-  when: hortonworks_ambari_server == true
 
-- name: create symlink 2 for Ambari to the installed postgresql-jdbc driver
-  file:
-    src: /usr/share/java/postgresql.jar
-    dest: /var/lib/ambari-server/resources/postgresql.jar
-    state: link
-  when: hortonworks_ambari_server == true
+# Postgres config
 
 - name: update listen_addresses in postgresql.conf
   lineinfile:
@@ -39,6 +27,8 @@
     - { regexp: "^local\\W+all\\W+all", line: "local   all             all                                     md5" }
     - { regexp: "^host\\W+all\\W+all\\W+0.0.0.0/0", line: "host    all             all             0.0.0.0/0               md5" }
     - { regexp: "^host\\W+all\\W+all\\W+::/0", line:      "host    all             all             ::/0                    md5" }
+
+# Postgres users and databases
 
 - name: create postgres admin user
   postgresql_user:
@@ -100,6 +90,23 @@
   become: true
   become_user: postgres
   with_items: "{{ hortonworks_postgres_users }}"
+  when: hortonworks_ambari_server == true
+
+# Ambari config
+
+#copy /usr/share/java/postgresql.jar to /var/lib/ambari-server/resources/postgresql.jar, symlink /var/lib/ambari-server/resources/postgresql.jar to /var/lib/ambari-server/resources/postgresql-jdbc.jar
+- name: create symlink 1 for Ambari to the installed postgresql-jdbc driver
+  file:
+    src: /usr/share/java/postgresql.jar
+    dest: /var/lib/ambari-server/resources/postgresql-jdbc.jar
+    state: link
+  when: hortonworks_ambari_server == true
+
+- name: create symlink 2 for Ambari to the installed postgresql-jdbc driver
+  file:
+    src: /usr/share/java/postgresql.jar
+    dest: /var/lib/ambari-server/resources/postgresql.jar
+    state: link
   when: hortonworks_ambari_server == true
 
 - name: check if Ansible database password file exists

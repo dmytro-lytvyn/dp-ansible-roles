@@ -20,14 +20,14 @@ nifi_cluster_node_protocol_port: 11443
 
 # HTTPS config: we'll use the same truststore (storage of trusted authority certificates) as keystore (client key certificates) because we don't use them for authorization
 nifi_security_truststore_file_name: "truststore.p12"
-nifi_security_truststore_passwd: "SuperSecretPassword"
+nifi_security_truststore_passwd: "Password_123"
 
 # OAuth config
 # https://console.developers.google.com/ -> New Project -> APIs and Services -> Credentials
 # Web application, Authorized redirect URIs: https://{{ nifi_domain_name }}:{{ nifi_listener_port }}/nifi-api/access/oidc/callback
 nifi_oauth_admin_name: "username@gmail.com"
 nifi_oauth_client_id: "1234567890.apps.googleusercontent.com"
-nifi_oauth_client_secret: "OAuthSuperSecret"
+nifi_oauth_client_secret: "OAuthSecret_123"
 
 # API open ports
 firewall_open_ports: '[1337]' # If you need to expose an external API, leave undefined if not needed
