@@ -1,9 +1,16 @@
 ---
 #copy /usr/share/java/postgresql.jar to /var/lib/ambari-server/resources/postgresql.jar, symlink /var/lib/ambari-server/resources/postgresql.jar to /var/lib/ambari-server/resources/postgresql-jdbc.jar
-- name: create symlink for Ambari to the installed postgresql-jdbc driver
+- name: create symlink 1 for Ambari to the installed postgresql-jdbc driver
   file:
     src: /usr/share/java/postgresql.jar
     dest: /var/lib/ambari-server/resources/postgresql-jdbc.jar
+    state: link
+  when: hortonworks_ambari_server == true
+
+- name: create symlink 2 for Ambari to the installed postgresql-jdbc driver
+  file:
+    src: /usr/share/java/postgresql.jar
+    dest: /var/lib/ambari-server/resources/postgresql.jar
     state: link
   when: hortonworks_ambari_server == true
 

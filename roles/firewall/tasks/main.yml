@@ -26,16 +26,18 @@
   when: hostvars[item].ansible_default_ipv4 is defined and hostvars[item].ansible_default_ipv4.address is defined
   with_items: "{{ groups['data-platform'] }}"
 
-- name: copy a bash script to update ufw firewall rule with a home network dynamic IP
+- name: copy a bash script to update ufw firewall rule with a dynamic IP
   template:
     src: ../files/ufw_allow_dynamic_ip.sh
     dest: "{{ firewall_dynamic_ip_scipt_path }}"
     owner: root
     group: root
     mode: 0700
+  notify:
+    - start-dynamic-ip-firewall-script
   when: firewall_dynamic_ip_hostname is defined
 
-- name: add a crontab job to update ufw firewall rule with a home network dynamic IP
+- name: add a crontab job to update ufw firewall rule with a dynamic IP
   cron:
     name: "update ufw firewall rule with a dynamic ip"
     minute: "*/5"

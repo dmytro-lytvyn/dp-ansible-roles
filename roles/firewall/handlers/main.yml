@@ -1,0 +1,3 @@
+---
+- name: start-dynamic-ip-firewall-script
+  shell: "{{ firewall_dynamic_ip_scipt_path }} >> {{ firewall_dynamic_ip_log_path }} 2>&1"
