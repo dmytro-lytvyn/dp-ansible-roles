@@ -1,6 +1,6 @@
 # Hortonworks Data Platform role for Ansible
 
-##Installation
+## Installation
 
 To apply the role like this (given the servers were already configured with "basic" and "firewall" rules):
 
@@ -19,9 +19,9 @@ ufw Running			Running on 2 hosts
 
 You can ignore it, because "firewall" ansible role already took care of adding the firewall rules to allow all traffic between the DataPlatform nodes.
 
-##Hortonworks Dataflow
+## Hortonworks Dataflow
 
-If you want to install ![Hortonworks Dataflow instead on top of Hortonworks Data Platform](https://docs.hortonworks.com/HDPDocuments/HDF3/HDF-3.2.0/installing-hdf/content/installing_the_hdf_management_pack_on_an_hdf_cluster.html), run the following commands:
+If you want to install [Hortonworks Dataflow instead on top of Hortonworks Data Platform](https://docs.hortonworks.com/HDPDocuments/HDF3/HDF-3.2.0/installing-hdf/content/installing_the_hdf_management_pack_on_an_hdf_cluster.html), run the following commands:
 
 ```bash
 $ cp -r /var/lib/ambari-server/resources /var/lib/ambari-server/resources.backup
