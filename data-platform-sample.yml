@@ -134,8 +134,9 @@
     # Installation versions
     hortonworks_postgres_version: "9.5"
     hortonworks_ambari_apt_key: B9733A7A07513CAD
-    hortonworks_ambari_apt_repo: "deb http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.7.1.0 Ambari main" # http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.7.1.0/ambari.list
-    #http://public-repo-1.hortonworks.com/HDP/ubuntu16/3.x/updates/3.0.1.0/hdp.list
+    # Ambari 2.7 repo: http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.7.1.0/ambari.list
+    # Ambari 2.6 repo: http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.6.2.2/ambari.list
+    hortonworks_ambari_apt_repo: "deb http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.6.2.2 Ambari main"
 
     # Installation components
     hortonworks_ambari_server: true
@@ -167,3 +168,79 @@
       - { db: "streamline", name: "streamline", password: "Password_123", priv: "CONNECT" }
       - { db: "druid", name: "druid", password: "Password_123", priv: "CONNECT" }
       - { db: "superset", name: "superset", password: "Password_123", priv: "CONNECT" }
+
+
+- hosts: rogue-3
+  become: true
+  roles:
+    - {role: 'java', tags: 'java'}
+    - {role: 'hadoop', tags: 'hadoop'}
+    - {role: 'hive', tags: 'hive'}
+    - {role: 'presto', tags: 'presto'}
+  vars:
+    # Hadoop
+    hadoop_package_mirror: "http://www-eu.apache.org/dist"
+    hadoop_version: "3.0.3"
+
+    hadoop_archive_filename: "hadoop-{{ hadoop_version }}.tar.gz"
+    hadoop_archive_url: "{{ hadoop_package_mirror }}/hadoop/common/hadoop-{{ hadoop_version }}/{{ hadoop_archive_filename }}"
+    hadoop_archive_hash_sha256: "db96e2c0d0d5352d8984892dfac4e27c0e682d98a497b7e04ee97c3e2019277a"
+
+    hadoop_unpack_dir: "/opt"
+    hadoop_install_dir: "/opt/hadoop-{{ hadoop_version }}"
+    hadoop_config_dir: "{{ hadoop_install_dir }}/etc/hadoop"
+    hadoop_link_dir: "/opt/hadoop"
+    hadoop_data_dir: /var/hadoop/data
+    hadoop_dfs_namenode_name_dir: "{{ hadoop_data_dir }}/namenode"
+    hadoop_dfs_datanode_data_dir: "{{ hadoop_data_dir }}/datanode"
+
+    hadoop_os_user_name: "hdfs"
+    hadoop_os_group_name: "{{ hadoop_os_user_name }}"
+    hadoop_os_user_pass: "encrypted-password-see-ansible-user-module-docs"
+
+    hadoop_host_name: "{{ ansible_fqdn }}"
+    hadoop_master_host_name: "{{ ansible_fqdn }}"
+    hadoop_worker_host_names: "{{ ansible_fqdn }}"
+    hadoop_dfs_replication: 1
+
+    hadoop_install_master: true
+    hadoop_install_worker: true
+    hadoop_install_client: true
+
+    # Presto
+    presto_package_mirror: "https://repo1.maven.org/maven2/com/facebook/presto"
+    presto_version: "0.213"
+
+    presto_archive_filename: "presto-server-{{presto_version}}.tar.gz"
+    presto_archive_url: "{{ presto_package_mirror }}/presto-server/{{ presto_version }}/{{ presto_archive_filename }}"
+    presto_archive_hash_sha1: "fa389433287addaefe8eb926510ce74ef05814b9"
+
+    presto_client_filename: "presto-cli-{{ presto_version }}-executable.jar"
+    presto_client_url: "{{ presto_package_mirror }}/presto-cli/{{ presto_version }}/{{ presto_client_filename }}"
+    presto_client_hash_sha1: "2fb5806d8889724e8df69444242a059d997f38b2"
+
+    presto_unpack_dir: "/opt"
+    presto_install_dir: "/opt/presto-server-{{ presto_version }}"
+    presto_link_dir: "/opt/presto"
+    presto_data_dir: /var/presto/data
+
+    presto_os_user_name: "presto"
+    presto_os_group_name: "{{ presto_os_user_name }}"
+    presto_os_user_pass: "encrypted-password-see-ansible-user-module-docs"
+
+    presto_coordinator_host: "{{ groups['presto-coordinator'].0 }}"
+    presto_hive_metastore_host: "{{ groups['presto-coordinator'].0 }}"
+    presto_hive_allow_drop_table: true
+
+    presto_install_coordinator: false
+    presto_install_worker: false
+    presto_install_client: false
+
+    presto_query_max_memory: 2GB
+    presto_query_max_memory_per_node: 2GB
+    presto_query_max_total_memory_per_node: 2GB
+    presto_max_heap_size: 3G
+    presto_http_port: 8080
+
+    presto_cluster_name: data-platform
+    presto_node_id: "{{presto_cluster_name}}-{{ ansible_fqdn }}"
