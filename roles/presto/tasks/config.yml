@@ -1,0 +1,56 @@
+---
+- name: create Presto etc/catalog directories
+  file:
+    path: "{{ presto_install_dir }}/etc/catalog"
+    owner: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
+    state: directory
+    mode: 0755
+  when: (presto_install_coordinator == true or presto_install_worker == true)
+
+- name: copy Presto configuration files
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ presto_install_dir }}/etc/{{ item }}"
+    owner: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
+  with_items:
+     - config.properties
+     - jmx.properties
+     - jvm.config
+     - log.properties
+     - node.properties
+     - catalog/hive.properties
+  notify:
+    - restart-service-presto
+  when: (presto_install_coordinator == true or presto_install_worker == true)
+
+- name: copy a Presto systemd service file
+  template:
+    src: presto.service.j2
+    dest: /lib/systemd/system/presto.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - register-autostart-service-presto
+  when: (presto_install_coordinator == true or presto_install_worker == true)
+
+- name: add init.d file for Presto on Ubuntu 14.04 
+  template:
+    src: init.d.presto.j2
+    dest: /etc/init.d/presto
+    owner: root
+    group: root
+    mode: 0755
+  notify:
+    - restart-service-presto
+  when: (presto_install_coordinator == true or presto_install_worker == true) and ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '14'
+
+- name: copy Presto environment script for all users
+  template:
+    src: profile.presto.sh.j2
+    dest: /etc/profile.d/presto.sh
+    owner: "root"
+    group: "root"
+    mode: 0777

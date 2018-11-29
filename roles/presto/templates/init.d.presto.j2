@@ -1,0 +1,16 @@
+#!/bin/sh
+# {{ ansible_managed }}
+
+CMD='PATH=$JAVA_HOME/bin:$PATH {{ presto_link_dir }}/bin/launcher'
+RUN_AS_USER='{{ presto_os_user_name }}'
+
+case $1 in
+  start|stop|restart|kill|status)
+    su -c "$CMD $1" "$RUN_AS_USER"
+      ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|kill|status}"
+    exit 2
+    ;;
+esac
+

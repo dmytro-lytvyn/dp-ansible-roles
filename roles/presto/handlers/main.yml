@@ -1,0 +1,10 @@
+---
+- name: register-autostart-service-presto
+  shell: systemctl enable presto
+  notify:
+    - restart-service-presto
+
+- name: restart-service-presto
+  service:
+    name: presto
+    state: restarted

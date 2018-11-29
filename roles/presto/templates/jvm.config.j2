@@ -1,0 +1,12 @@
+-server
+-Xmx{{ presto_max_heap_size }}
+-XX:ReservedCodeCacheSize=512M
+-XX:-UseBiasedLocking
+-XX:+UseG1GC
+-XX:G1HeapRegionSize=32M
+-XX:+UseGCOverheadLimit
+-XX:+ExplicitGCInvokesConcurrent
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:+ExitOnOutOfMemoryError
+
+

@@ -1,0 +1,21 @@
+coordinator={% if presto_install_coordinator %}
+true
+{% else %}
+false
+{% endif %}
+{% if presto_install_coordinator %}
+discovery-server.enabled=true
+node-scheduler.include-coordinator={% if presto_install_worker %}
+true
+{% else %}
+false
+{% endif %}
+{% endif %}
+http-server.http.port={{ presto_http_port }}
+query.max-memory={{ presto_query_max_memory }}
+query.max-memory-per-node={{ presto_query_max_memory_per_node }}
+query.max-total-memory-per-node={{ presto_query_max_total_memory_per_node }}
+discovery.uri=http://{{ presto_coordinator_host }}:{{ presto_http_port }}
+
+
+

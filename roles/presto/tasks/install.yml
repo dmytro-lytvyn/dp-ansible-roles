@@ -1,0 +1,132 @@
+---
+- name: ensure Presto group exists
+  group:
+    name: "{{ presto_os_group_name }}"
+
+- name: ensure Presto user exists
+  user:
+    name: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
+    shell: /bin/bash
+    password: "{{ presto_os_user_pass }}"
+
+# Download Presto Server
+
+- name: calculate the checksum of the downloaded Presto distro if exists
+  stat:
+    path: "{{ presto_unpack_dir }}/{{ presto_archive_filename }}"
+    get_checksum: yes
+    checksum_algorithm: sha1
+  register: presto_distro_local
+  when: (presto_install_coordinator == true or presto_install_worker == true)
+
+- name: compare the Presto distro checksum
+  set_fact:
+    force_presto_distro_download: "{{ presto_distro_local.stat.checksum != presto_archive_hash_sha1 }}"
+  when: (presto_install_coordinator == true or presto_install_worker == true) and presto_distro_local.stat.exists
+
+- name: download the Presto distro if needed
+  get_url:
+    url: "{{ presto_archive_url }}"
+    dest: "{{ presto_unpack_dir }}/{{ presto_archive_filename }}"
+    checksum: "sha1:{{ presto_archive_hash_sha1 }}"
+    force:  "{{ force_presto_distro_download | default ('false') }}"
+    timeout: 30
+    owner: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
+    mode: 0644
+  when: (presto_install_coordinator == true or presto_install_worker == true)
+
+- name: check if Presto install directory already exists
+  stat:
+    path: "{{ presto_install_dir }}"
+  register: presto_install_directory
+
+- name: check if Presto launcher script already exists
+  stat:
+    path: "{{ presto_install_dir }}/bin/launcher"
+  register: presto_launcher_script
+
+# Create Presto install directory and unpack the server
+
+- name: create Presto install directory if needed
+  file:
+    path: "{{ presto_install_dir }}"
+    owner: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
+    state: directory
+    mode: 0755
+
+- name: create Presto bin directory if needed
+  file:
+    path: "{{ presto_install_dir }}/bin"
+    owner: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
+    state: directory
+    mode: 0755
+
+- name: unpack Presto distro archive
+  unarchive:
+    src: "{{ presto_unpack_dir }}/{{ presto_archive_filename }}"
+    dest: "{{ presto_unpack_dir }}/"
+    remote_src: yes
+    keep_newer: yes
+  when: (presto_install_coordinator == true or presto_install_worker == true) and (presto_install_directory.stat.exists == False or presto_launcher_script.stat.exists == False)
+  notify:
+    - restart-service-presto
+
+# Install Presto CLI
+
+- name: calculate the checksum of the downloaded Presto CLI if exists
+  stat:
+    path: "{{ presto_install_dir }}/bin/{{ presto_client_filename }}"
+    get_checksum: yes
+    checksum_algorithm: sha1
+  register: presto_client_local
+  when: (presto_install_client == true)
+
+- name: compare the Presto CLI checksum
+  set_fact:
+    force_presto_client_download: "{{ presto_client_local.stat.checksum != presto_client_hash_sha1 }}"
+  when: (presto_install_client == true) and presto_client_local.stat.exists
+
+- name: download the Presto CLI if needed
+  get_url:
+    url: "{{ presto_client_url }}"
+    dest: "{{ presto_install_dir }}/bin/{{ presto_client_filename }}"
+    checksum: "sha1:{{ presto_client_hash_sha1 }}"
+    force:  "{{ force_presto_client_download | default ('false') }}"
+    timeout: 30
+    owner: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
+    mode: 0777
+  when: (presto_install_client == true)
+
+- name: copy Presto CLI starter script
+  template:
+    src: "presto.sh.j2"
+    dest: "{{ presto_install_dir }}/bin/presto"
+    owner: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
+    mode: 0777
+  when: (presto_install_client == true)
+
+# Update Presto install directory owner and create a symlink
+
+- name: recursively set Presto directory owner
+  file:
+    state: directory
+    path: "{{ presto_install_dir }}"
+    owner: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
+    #mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  when: presto_install_directory.stat.exists == False
+
+- name: create symlink to a generic Presto directory
+  file:
+    src: "{{ presto_install_dir }}"
+    dest: "{{ presto_link_dir }}"
+    state: link
+    owner: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
