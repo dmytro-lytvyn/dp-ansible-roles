@@ -1,0 +1,11 @@
+[Midnight-Commander]
+use_internal_view=1
+use_internal_edit=1
+confirm_exit=0
+skin=modarin256-defbg-thin
+
+[Layout]
+message_visible=0
+keybar_visible=1
+command_prompt=1
+menubar_visible=1

@@ -53,5 +53,7 @@
     src: /opt/nifi-{{ nifi_version }}
     dest: /opt/nifi
     state: link
+    owner: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_user_name }}"
   notify:
     - restart-service-nifi

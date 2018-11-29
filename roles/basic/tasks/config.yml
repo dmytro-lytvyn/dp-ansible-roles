@@ -17,14 +17,14 @@
 
 - name: copy mc config ini file
   copy:
-    src: "../files/mc/ini"
+    src: "../files/mc/ini_{{ item.suffix }}"
     dest: "{{ item.home }}/.config/mc/ini"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"
     mode: 0644
   with_items:
-    - { home: "/home/{{ basic_user_name }}", user: "{{ basic_user_name }}" }
-    - { home: "/root", user: "root" }
+    - { home: "/home/{{ basic_user_name }}", user: "{{ basic_user_name }}", suffix: "user" }
+    - { home: "/root", user: "root", suffix: "root" }
   when: mc_config_dir.stat.exists == False
 
 - name: copy mc config panels file

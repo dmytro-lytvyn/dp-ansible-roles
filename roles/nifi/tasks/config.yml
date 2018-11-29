@@ -9,33 +9,17 @@
   notify:
     - register-autostart-service-nifi
 
-- name: copy nifi.properties file for NiFi
+- name: copy NiFi configuration files
   template:
-    src: ../files/nifi.properties
-    dest: /opt/nifi-{{ nifi_version }}/conf/nifi.properties
+    src: "{{ item }}"
+    dest: "/opt/nifi-{{ nifi_version }}/conf/{{ item }}"
     owner: "{{ nifi_os_user_name }}"
     group: "{{ nifi_os_user_name }}"
     mode: 0644
-  notify:
-    - restart-service-nifi
-
-- name: copy bootstrap.conf file for NiFi
-  template:
-    src: ../files/bootstrap.conf
-    dest: /opt/nifi-{{ nifi_version }}/conf/bootstrap.conf
-    owner: "{{ nifi_os_user_name }}"
-    group: "{{ nifi_os_user_name }}"
-    mode: 0644
-  notify:
-    - restart-service-nifi
-
-- name: copy authorizers.xml file for NiFi
-  template:
-    src: ../files/authorizers.xml
-    dest: /opt/nifi-{{ nifi_version }}/conf/authorizers.xml
-    owner: "{{ nifi_os_user_name }}"
-    group: "{{ nifi_os_user_name }}"
-    mode: 0644
+  with_items:
+     - nifi.properties
+     - bootstrap.conf
+     - authorizers.xml
   notify:
     - restart-service-nifi
 

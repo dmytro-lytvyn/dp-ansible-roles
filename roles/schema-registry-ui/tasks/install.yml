@@ -66,6 +66,8 @@
     src: /opt/schema-registry-ui-{{ schema_registry_ui_version }}
     dest: /opt/schema-registry-ui
     state: link
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
   notify:
     - restart-service-schema-registry-ui
 
@@ -133,6 +135,8 @@
     src: /opt/caddy_{{ caddy_version }}
     dest: /opt/caddy
     state: link
+    owner: "{{ schema_registry_ui_os_user_name }}"
+    group: "{{ schema_registry_ui_os_user_name }}"
   notify:
     - restart-service-schema-registry-ui
 

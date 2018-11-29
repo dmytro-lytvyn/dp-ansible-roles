@@ -84,28 +84,34 @@ inventory      = hosts
 
 ### Ansible commands
 
+List the inventory:
+
+```bash
+$ ansible --user=username --list-hosts all
+```
+
 Test the configuration:
 
 ```bash
-$ ansible -u username -m ping all
+$ ansible --user=username --module-name=ping all
 ```
 
 Execute shell commands:
 
 ```bash
-$ ansible -u username -m shell -a 'df -h' all
+$ ansible --user=username --module-name=shell --args='df -h' all
 ```
 
 Execute commands with sudo and a password:
 
 ```bash
-$ ansible -u username -b -K -m shell -a 'whoami' all
+$ ansible --user=username --become --ask-become-pass --module-name=shell --args='whoami' all
 ```
 
 Execute commands with a passwordless sudo:
 
 ```bash
-$ ansible -u username -b -m shell -a 'whoami' all
+$ ansible --user=username --become --module-name=shell --args='whoami' all
 ```
 
 Copy the sample Ansible playbook provided in the repository and update it to your needs:
@@ -118,7 +124,7 @@ $ vi data-platform.yml
 Run the Ansible playbook for the first time for one of the servers, when no passwordless sudo available, only root user exists (which will add a default user with a passwordless sudo and disable root login), and only the roles specified by tags in a playbook:
 
 ```bash
-$ ansible-playbook --user=root data-platform.yml --limit=rogue-1 --tags "basic,firewall"
+$ ansible-playbook --user=root data-platform.yml --limit=rogue-1 --tags="basic,firewall"
 ```
 
 For every consequent run, as a normal user, without a password, applying all roles defined in a playbook:
