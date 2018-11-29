@@ -58,3 +58,47 @@ Restart Ambari Server and you can install a cluster of HDF:
 ```bash
 $ ambari-server restart
 ```
+
+## HDP 2.6:
+
+/etc/ambari-agent/conf/ambari-agent.ini
+
+```config
+[security]
+force_https_protocol=PROTOCOL_TLSv1_2
+
+[heartbeat]
+log_lines_count=50
+```
+
+/etc/ambari-server/conf/ambari.properties
+
+```config
+security.server.two_way_ssl=true
+```
+
+Services --> HDFS --> Configs --> Advanced tab --> Custom core-site
+
+```config
+hadoop.proxyuser.root.groups=*
+hadoop.proxyuser.root.hosts=*
+
+hadoop.proxyuser.hcat.groups=*
+hadoop.proxyuser.hcat.hosts=*
+```
+
+Services --> HIVE --> Configs --> Advanced tab --> Custom webhcat-site
+
+```config
+webhcat.proxyuser.root.groups=*
+webhcat.proxyuser.root.hosts=*
+```
+
+HIVE USER HOME Check
+File does not exist: /user/admin
+
+```bash
+sudo su - hdfs
+hdfs dfs -mkdir /user/admin
+hdfs dfs -chown admin:hdfs /user/admin
+```

@@ -16,6 +16,11 @@
     - libpq-dev
     - python-psycopg2
     - libpostgresql-jdbc-java
+    #- mysql-server mysql-client libmysql-java (/usr/share/java/mysql.jar -> /var/lib/ambari-server/resources/mysql-connector-java.jar)
+    # vi /etc/mysql/mysql.conf.d/mysqld.cnf
+    # bind-address            = 0.0.0.0
+    # GRANT ALL PRIVILEGES ON *.* TO 'hive'@'%';
+    # /usr/hdp/current/hive-server2/bin/schematool -initSchema -dbType mysql -userName hive -passWord pass -verbose
   when: hortonworks_ambari_server == true
   notify:
     - register-autostart-service-postgresql
