@@ -1,0 +1,1 @@
+# Hadoop role for Ansible

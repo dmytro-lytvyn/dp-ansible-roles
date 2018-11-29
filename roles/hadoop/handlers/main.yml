@@ -1,0 +1,10 @@
+---
+- name: register-autostart-service-hadoop
+  shell: systemctl enable hadoop
+  notify:
+    - restart-service-hadoop
+
+- name: restart-service-hadoop
+  service:
+    name: hadoop
+    state: restarted

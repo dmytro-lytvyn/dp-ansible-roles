@@ -1,0 +1,75 @@
+---
+
+- name: check if Hadoop SSH key already exists
+  stat:
+    path: "/home/{{ hadoop_os_user_name }}/.ssh/id_rsa"
+  register: hadoop_ssh_key
+
+- name: register-autostart-service-hadoop
+  shell: ssh-keygen -f /home/{{ hadoop_os_user_name }}/.ssh/id_rsa -N ""
+  become: true
+  become_user: "{{ hadoop_os_user_name }}"
+  notify:
+    - restart-service-hadoop
+  when: hadoop_ssh_key.stat.exists == false
+
+- name: register-autostart-service-hadoop
+  #shell: ssh-copy-id {{ hadoop_host_name }}
+  shell: cat /home/{{ hadoop_os_user_name }}/.ssh/id_rsa.pub >> /home/{{ hadoop_os_user_name }}/.ssh/authorized_keys
+  become: true
+  become_user: "{{ hadoop_os_user_name }}"
+  notify:
+    - restart-service-hadoop
+  when: hadoop_ssh_key.stat.exists == false
+
+- name: create Hadoop config directory
+  file:
+    path: "{{ hadoop_config_dir }}"
+    owner: "{{ hadoop_os_user_name }}"
+    group: "{{ hadoop_os_group_name }}"
+    state: directory
+    mode: 0755
+  when: (hadoop_install_master == true or hadoop_install_worker == true)
+
+- name: copy Hadoop configuration files
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ hadoop_config_dir }}/{{ item }}"
+    owner: "{{ hadoop_os_user_name }}"
+    group: "{{ hadoop_os_group_name }}"
+  with_items:
+     - core-site.xml
+     - hdfs-site.xml
+     - master
+     - workers
+  notify:
+    - restart-service-hadoop
+  when: (hadoop_install_master == true or hadoop_install_worker == true)
+
+- name: add JAVA_HOME to Hadoop environment (bugfix)
+  lineinfile:
+      dest: "{{ hadoop_config_dir }}/hadoop-env.sh"
+      regexp: ^.*export JAVA_HOME.*$
+      line: "export JAVA_HOME=/usr/lib/jvm/java-8-oracle"
+      state: present
+  notify:
+    - restart-service-hadoop
+
+- name: copy a Hadoop systemd service file
+  template:
+    src: hadoop.service.j2
+    dest: /lib/systemd/system/hadoop.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - register-autostart-service-hadoop
+  when: (hadoop_install_master == true or hadoop_install_worker == true)
+
+- name: copy Hadoop environment script for all users
+  template:
+    src: profile.hadoop.sh.j2
+    dest: /etc/profile.d/hadoop.sh
+    owner: "root"
+    group: "root"
+    mode: 0777

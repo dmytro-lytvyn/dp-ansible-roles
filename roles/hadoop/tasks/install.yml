@@ -1,0 +1,100 @@
+---
+- name: ensure Hadoop group exists
+  group:
+    name: "{{ hadoop_os_group_name }}"
+
+- name: ensure Hadoop user exists
+  user:
+    name: "{{ hadoop_os_user_name }}"
+    group: "{{ hadoop_os_group_name }}"
+    shell: /bin/bash
+    password: "{{ hadoop_os_user_pass }}"
+
+# Download Hadoop package
+
+- name: calculate the checksum of the downloaded Hadoop distro if exists
+  stat:
+    path: "{{ hadoop_unpack_dir }}/{{ hadoop_archive_filename }}"
+    get_checksum: yes
+    checksum_algorithm: sha256
+  register: hadoop_distro_local
+  when: (hadoop_install_master == true or hadoop_install_worker == true)
+
+- name: compare the Hadoop distro checksum
+  set_fact:
+    force_hadoop_distro_download: "{{ hadoop_distro_local.stat.checksum != hadoop_archive_hash_sha256 }}"
+  when: (hadoop_install_master == true or hadoop_install_worker == true) and hadoop_distro_local.stat.exists
+
+- name: download the Hadoop distro if needed
+  get_url:
+    url: "{{ hadoop_archive_url }}"
+    dest: "{{ hadoop_unpack_dir }}/{{ hadoop_archive_filename }}"
+    checksum: "sha256:{{ hadoop_archive_hash_sha256 }}"
+    force:  "{{ force_hadoop_distro_download | default ('false') }}"
+    timeout: 30
+    owner: "{{ hadoop_os_user_name }}"
+    group: "{{ hadoop_os_group_name }}"
+    mode: 0644
+  when: (hadoop_install_master == true or hadoop_install_worker == true)
+
+- name: check if Hadoop install directory already exists
+  stat:
+    path: "{{ hadoop_install_dir }}"
+  register: hadoop_install_directory
+
+- name: check if Hadoop launcher script already exists
+  stat:
+    path: "{{ hadoop_install_dir }}/sbin/start-dfs.sh"
+  register: hadoop_launcher_script
+
+# Create Hadoop install directory and unpack the server
+
+- name: create Hadoop directories if needed
+  file:
+    path: "{{ item }}"
+    owner: "{{ hadoop_os_user_name }}"
+    group: "{{ hadoop_os_group_name }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ hadoop_install_dir }}"
+    - "{{ hadoop_install_dir }}/bin"
+    - "{{ hadoop_data_dir }}"
+    - "{{ hadoop_data_dir }}/namenode"
+    - "{{ hadoop_data_dir }}/datanode"
+
+- name: unpack Hadoop distro archive
+  unarchive:
+    src: "{{ hadoop_unpack_dir }}/{{ hadoop_archive_filename }}"
+    dest: "{{ hadoop_unpack_dir }}/"
+    remote_src: yes
+    keep_newer: yes
+  when: (hadoop_install_master == true or hadoop_install_worker == true) and (hadoop_install_directory.stat.exists == False or hadoop_launcher_script.stat.exists == False)
+  notify:
+    - restart-service-hadoop
+
+# Update Hadoop install directory owner and create a symlink
+
+- name: recursively set Hadoop directory owner
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ hadoop_os_user_name }}"
+    group: "{{ hadoop_os_group_name }}"
+    #mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  with_items:
+    - "{{ hadoop_install_dir }}"
+    - "{{ hadoop_install_dir }}/bin"
+    - "{{ hadoop_data_dir }}"
+    - "{{ hadoop_data_dir }}/namenode"
+    - "{{ hadoop_data_dir }}/datanode"
+  when: (hadoop_install_directory.stat.exists == False or hadoop_launcher_script.stat.exists == False)
+
+- name: create symlink to a generic Hadoop directory
+  file:
+    src: "{{ hadoop_install_dir }}"
+    dest: "{{ hadoop_link_dir }}"
+    state: link
+    owner: "{{ hadoop_os_user_name }}"
+    group: "{{ hadoop_os_group_name }}"
