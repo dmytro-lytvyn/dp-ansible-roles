@@ -124,53 +124,12 @@
     kafdrop_zookeeper_host_name: "localhost"
     kafdrop_zookeeper_port: 2181
 
+# All services status:
+
+#for srv in nifi confluent schema kafdrop; do systemctl status $srv* --no-pager --full; done
+
 
 - hosts: rogue-2
-  become: true
-  roles:
-    - {role: 'java', tags: 'java'}
-    - {role: 'hortonworks-data-platform', tags: 'hortonworks-data-platform'}
-  vars:
-    # Installation versions
-    hortonworks_postgres_version: "9.5"
-    hortonworks_ambari_apt_key: B9733A7A07513CAD
-    # Ambari 2.7 repo: http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.7.1.0/ambari.list
-    # Ambari 2.6 repo: http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.6.2.2/ambari.list
-    hortonworks_ambari_apt_repo: "deb http://public-repo-1.hortonworks.com/ambari/ubuntu16/2.x/updates/2.6.2.2 Ambari main"
-
-    # Installation components
-    hortonworks_ambari_server: true
-    hortonworks_ambari_agent: true
-
-    # Configuration
-    hortonworks_ambari_server_hostname: "manager.data-platform.example"
-    hortonworks_postgres_admin_username: "admin"
-    hortonworks_postgres_admin_password: "Password_123"
-
-    hortonworks_postgres_ambari_database: "ambari"
-    hortonworks_postgres_ambari_schema: "ambari"
-    hortonworks_postgres_ambari_username: "ambari"
-    hortonworks_postgres_ambari_password: "Password_123"
-
-    hortonworks_postgres_databases:
-      - { name: "hive" }
-      - { name: "ranger" }
-      - { name: "registry" }
-      - { name: "streamline" }
-      - { name: "druid" }
-      - { name: "superset" }
-
-    hortonworks_postgres_users:
-      - { db: "hive", name: "hive", password: "Password_123", priv: "ALL" }
-      - { db: "ranger", name: "rangeradmin", password: "Password_123", priv: "ALL" }
-      - { db: "ranger", name: "ranger", password: "Password_123", priv: "CONNECT" }
-      - { db: "registry", name: "registry", password: "Password_123", priv: "CONNECT" }
-      - { db: "streamline", name: "streamline", password: "Password_123", priv: "CONNECT" }
-      - { db: "druid", name: "druid", password: "Password_123", priv: "CONNECT" }
-      - { db: "superset", name: "superset", password: "Password_123", priv: "CONNECT" }
-
-
-- hosts: rogue-3
   become: true
   roles:
     - {role: 'java', tags: 'java'}
@@ -207,6 +166,35 @@
     hadoop_install_worker: true
     hadoop_install_client: true
 
+    # Hive
+    hive_package_mirror: "http://www-eu.apache.org/dist"
+    hive_version: "2.3.4"
+
+    hive_archive_filename: "apache-hive-{{ hive_version }}-bin.tar.gz"
+    hive_archive_url: "{{ hive_package_mirror }}/hive/hive-{{ hive_version }}/{{ hive_archive_filename }}"
+    hive_archive_hash_sha256: "ce86d1c20b1004ef76b33feacf40aa7fc03b49de6299c424335fd7f6e875cea4"
+
+    hive_unpack_dir: "/opt"
+    hive_install_dir: "/opt/apache-hive-{{ hive_version }}-bin"
+    hive_config_dir: "{{ hive_install_dir }}/conf"
+    hive_link_dir: "/opt/hive"
+
+    hive_metastore_host_name: "{{ ansible_fqdn }}"
+    hive_metastore_user_name: "hive"
+    hive_metastore_user_pass: "Password_123"
+
+    mysql_connector_version: "5.1.47"
+    mysql_connector_filename: "mysql-connector-java-{{ mysql_connector_version }}.jar"
+    mysql_connector_url: "http://central.maven.org/maven2/mysql/mysql-connector-java/{{ mysql_connector_version }}/{{ mysql_connector_filename }}"
+    mysql_connector_hash_sha1: "9de4159aaf2d08817a276610b8114a825fca6cfd"
+    mysql_connector_install_location: "{{ hive_install_dir }}/lib/mysql-connector-java.jar"
+
+    hive_os_user_name: "hdfs"
+    hive_os_group_name: "{{ hive_os_user_name }}"
+    hive_os_user_pass: "$6$856oFray$yA7FyZVsnuaqouqF7ndPPgKmxkxUvT25x9rl.FQJBtvULe49CJ0jCx7u5qrBKvONLemMoyEVKuGTlz7FQkWYd1"
+
+    hive_install_metastore: false
+
     # Presto
     presto_package_mirror: "https://repo1.maven.org/maven2/com/facebook/presto"
     presto_version: "0.213"
@@ -224,23 +212,28 @@
     presto_link_dir: "/opt/presto"
     presto_data_dir: /var/presto/data
 
-    presto_os_user_name: "presto"
+    presto_os_user_name: "hdfs"
     presto_os_group_name: "{{ presto_os_user_name }}"
     presto_os_user_pass: "encrypted-password-see-ansible-user-module-docs"
 
-    presto_coordinator_host: "{{ groups['presto-coordinator'].0 }}"
-    presto_hive_metastore_host: "{{ groups['presto-coordinator'].0 }}"
+    presto_coordinator_host: "{{ ansible_fqdn }}"
+    presto_hive_metastore_host: "{{ ansible_fqdn }}"
     presto_hive_allow_drop_table: true
 
-    presto_install_coordinator: false
-    presto_install_worker: false
-    presto_install_client: false
+    presto_install_coordinator: true
+    presto_install_worker: true
+    presto_install_client: true
 
     presto_query_max_memory: 2GB
     presto_query_max_memory_per_node: 2GB
     presto_query_max_total_memory_per_node: 2GB
     presto_max_heap_size: 3G
-    presto_http_port: 8080
+    presto_http_port: 9090
 
-    presto_cluster_name: data-platform
+    presto_cluster_name: dataplatform
     presto_node_id: "{{presto_cluster_name}}-{{ ansible_fqdn }}"
+
+# All services status:
+
+#for srv in hdfs hive presto; do systemctl status $srv* --no-pager --full; done
+
