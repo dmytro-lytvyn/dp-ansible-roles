@@ -11,7 +11,7 @@
 
 - name: apply config for zookeeper
   template:
-    src: ../files/zookeeper.properties
+    src: zookeeper.properties
     dest: /etc/kafka/zookeeper.properties
     owner: root
     group: root
@@ -23,7 +23,7 @@
 
 - name: apply config for schema-registry
   template:
-    src: ../files/schema-registry.properties
+    src: schema-registry.properties
     dest: /etc/schema-registry/schema-registry.properties
     owner: root
     group: root

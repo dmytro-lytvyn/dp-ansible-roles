@@ -33,7 +33,7 @@
 
 - name: copy a bash script to update ufw firewall rule with a dynamic IP
   template:
-    src: ../files/ufw_allow_dynamic_ip.sh
+    src: ufw_allow_dynamic_ip.sh
     dest: "{{ firewall_dynamic_ip_scipt_path }}"
     owner: root
     group: root
@@ -51,7 +51,7 @@
 
 - name: copy a logrotate file to archive logs of updating firewall rules
   template:
-    src: ../files/logrotate_ufw_allow_dynamic_ip
+    src: logrotate_ufw_allow_dynamic_ip
     dest: /etc/logrotate.d/logrotate_ufw_allow_dynamic_ip
     owner: root
     group: root

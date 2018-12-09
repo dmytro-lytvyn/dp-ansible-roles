@@ -65,6 +65,16 @@
     state: directory
     mode: 0755
 
+- name: create Presto data directory if needed
+  file:
+    path: "{{ presto_data_dir }}"
+    owner: "{{ presto_os_user_name }}"
+    group: "{{ presto_os_group_name }}"
+    state: directory
+    mode: 0755
+  notify:
+    - restart-service-presto
+
 - name: unpack Presto distro archive
   unarchive:
     src: "{{ presto_unpack_dir }}/{{ presto_archive_filename }}"

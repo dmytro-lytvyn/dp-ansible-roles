@@ -55,13 +55,14 @@
     owner: "{{ hadoop_os_user_name }}"
     group: "{{ hadoop_os_group_name }}"
     state: directory
-    mode: 0755
   with_items:
     - "{{ hadoop_install_dir }}"
     - "{{ hadoop_install_dir }}/bin"
     - "{{ hadoop_data_dir }}"
     - "{{ hadoop_data_dir }}/namenode"
     - "{{ hadoop_data_dir }}/datanode"
+  notify:
+    - format-hadoop-namenode
 
 - name: unpack Hadoop distro archive
   unarchive:

@@ -1,0 +1,14 @@
+[Unit]
+Description=Apache Hadoop - Datanode
+After=network.target
+
+[Service]
+Type=forking
+User={{ hadoop_os_user_name }}
+Group={{ hadoop_os_group_name }}
+ExecStart={{ hadoop_link_dir }}/bin/hdfs --daemon start datanode
+ExecStop={{ hadoop_link_dir }}/bin/hdfs --daemon stop datanode
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

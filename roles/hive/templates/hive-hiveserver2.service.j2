@@ -1,0 +1,14 @@
+[Unit]
+Description=Apache Hiveserver2
+After=network.target
+
+[Service]
+Type=simple
+User={{ hive_os_user_name }}
+Group={{ hive_os_group_name }}
+Environment=HADOOP_HOME={{ hadoop_link_dir }}
+ExecStart={{ hive_link_dir }}/bin/hive --service hiveserver2
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

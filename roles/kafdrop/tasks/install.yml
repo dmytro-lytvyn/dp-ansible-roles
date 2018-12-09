@@ -49,7 +49,7 @@
 
 - name: copy Kafdrop starter bash script
   template:
-    src: ../files/kafdrop.sh
+    src: kafdrop.sh
     dest: /opt/kafdrop/kafdrop.sh
     owner: "{{ kafdrop_os_user_name }}"
     group: "{{ kafdrop_os_user_name }}"

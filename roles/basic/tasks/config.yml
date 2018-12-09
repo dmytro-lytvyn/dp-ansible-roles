@@ -17,7 +17,7 @@
 
 - name: copy mc config ini file
   copy:
-    src: "../files/mc/ini_{{ item.suffix }}"
+    src: "ini_{{ item.suffix }}"
     dest: "{{ item.home }}/.config/mc/ini"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"
@@ -29,7 +29,7 @@
 
 - name: copy mc config panels file
   copy:
-    src: "../files/mc/panels.ini"
+    src: "panels.ini"
     dest: "{{ item.home }}/.config/mc/panels.ini"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"

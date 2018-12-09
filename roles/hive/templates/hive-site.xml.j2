@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:mysql://{{ hive_metastore_host_name }}/metastore?createDatabaseIfNotExist=true&amp;useSSL=true&amp;verifyServerCertificate=false</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>com.mysql.jdbc.Driver</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>{{ hive_metastore_user_name }}</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>{{ hive_metastore_user_pass }}</value>
+    </property>
+    <property>
+        <name>datanucleus.autoCreateSchema</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>datanucleus.fixedDatastore</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>datanucleus.autoCreateTables</name>
+        <value>True</value>
+    </property>
+   <!--property><name>hive.server2.thrift.port</name><value>10000</value></property>
+   <property><name>hive.server2.thrift.bind.host</name><value>rogue-2.data-for.me</value></property>
+   <property><name>hive.server2.transport.mode</name><value>binary</value></property-->
+   <property><name>hive.server2.enable.doAs</name><value>true</value></property>
+   <property><name>hive.execution.engine</name><value>mr</value></property>
+   <property><name>hive.execution.mode</name><value>llap</value></property>
+</configuration>

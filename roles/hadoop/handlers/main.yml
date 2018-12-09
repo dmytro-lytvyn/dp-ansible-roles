@@ -1,10 +1,25 @@
 ---
+- name: format-hadoop-namenode
+  shell: "{{ hadoop_install_dir }}/bin/hdfs namenode -format -nonInteractive" # add -force to always format
+  become: true
+  become_user: "{{ hadoop_os_user_name }}"
+  notify:
+    - restart-service-hadoop
+
 - name: register-autostart-service-hadoop
-  shell: systemctl enable hadoop
+  shell: "systemctl enable {{ item }}" # systemctl daemon-reload needed after changing service file?
+  with_items:
+     - hdfs-namenode
+     - hdfs-datanode
+     - hdfs-secondarynamenode
   notify:
     - restart-service-hadoop
 
 - name: restart-service-hadoop
   service:
-    name: hadoop
+    name: "{{ item }}"
     state: restarted
+  with_items:
+     - hdfs-namenode
+     - hdfs-datanode
+     - hdfs-secondarynamenode

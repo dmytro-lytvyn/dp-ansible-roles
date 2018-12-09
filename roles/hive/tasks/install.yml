@@ -1,0 +1,116 @@
+---
+- name: ensure Hive group exists
+  group:
+    name: "{{ hive_os_group_name }}"
+
+- name: ensure Hive user exists
+  user:
+    name: "{{ hive_os_user_name }}"
+    group: "{{ hive_os_group_name }}"
+    shell: /bin/bash
+    password: "{{ hive_os_user_pass }}"
+
+# Download Hive package
+
+- name: calculate the checksum of the downloaded Hive distro if exists
+  stat:
+    path: "{{ hive_unpack_dir }}/{{ hive_archive_filename }}"
+    get_checksum: yes
+    checksum_algorithm: sha256
+  register: hive_distro_local
+
+- name: compare the Hive distro checksum
+  set_fact:
+    force_hive_distro_download: "{{ hive_distro_local.stat.checksum != hive_archive_hash_sha256 }}"
+  when: hive_distro_local.stat.exists
+
+- name: download the Hive distro if needed
+  get_url:
+    url: "{{ hive_archive_url }}"
+    dest: "{{ hive_unpack_dir }}/{{ hive_archive_filename }}"
+    checksum: "sha256:{{ hive_archive_hash_sha256 }}"
+    force:  "{{ force_hive_distro_download | default ('false') }}"
+    timeout: 30
+    owner: "{{ hive_os_user_name }}"
+    group: "{{ hive_os_group_name }}"
+    mode: 0644
+
+- name: check if Hive install directory already exists
+  stat:
+    path: "{{ hive_install_dir }}"
+  register: hive_install_directory
+
+- name: check if Hive launcher script already exists
+  stat:
+    path: "{{ hive_install_dir }}/bin/hive"
+  register: hive_launcher_script
+
+# Unpack the Hive package
+
+- name: unpack Hive distro archive
+  unarchive:
+    src: "{{ hive_unpack_dir }}/{{ hive_archive_filename }}"
+    dest: "{{ hive_unpack_dir }}/"
+    remote_src: yes
+    keep_newer: yes
+  when: (hive_install_directory.stat.exists == False or hive_launcher_script.stat.exists == False)
+  notify:
+    - drop-metastore-mysql-database
+    - create-metastore-mysql-database
+    - init-mysql-metastore-schema
+    - restart-service-hive
+
+# Install MySQL
+
+- name: install MySQL server
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - mysql-server
+    - python-mysqldb
+  notify:
+    - restart-service-mysql
+
+- name: calculate the checksum of the downloaded  MySQL connector if exists
+  stat:
+    path: "{{ mysql_connector_install_location }}"
+    get_checksum: yes
+    checksum_algorithm: sha1
+  register: mysql_connector_local
+
+- name: compare the MySQL connector checksum
+  set_fact:
+    force_mysql_connector_download: "{{  mysql_connector_local.stat.checksum != mysql_connector_hash_sha1 }}"
+  when: mysql_connector_local.stat.exists
+
+- name: download the MySQL connector if needed
+  get_url:
+    url: "{{ mysql_connector_url }}"
+    dest: "{{ mysql_connector_install_location }}"
+    checksum: "sha1:{{ mysql_connector_hash_sha1 }}"
+    force:  "{{ force_mysql_connector_download | default ('false') }}"
+    timeout: 30
+    owner: "{{ hive_os_user_name }}"
+    group: "{{ hive_os_group_name }}"
+    mode: 0644
+
+# Update Hive install directory owner and create a symlink
+
+- name: recursively set Hive directory owner
+  file:
+    state: directory
+    path: "{{ hive_install_dir }}"
+    owner: "{{ hive_os_user_name }}"
+    group: "{{ hive_os_group_name }}"
+    #mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  when: (hive_install_directory.stat.exists == False or hive_launcher_script.stat.exists == False)
+
+- name: create symlink to a generic Hive directory
+  file:
+    src: "{{ hive_install_dir }}"
+    dest: "{{ hive_link_dir }}"
+    state: link
+    owner: "{{ hive_os_user_name }}"
+    group: "{{ hive_os_group_name }}"

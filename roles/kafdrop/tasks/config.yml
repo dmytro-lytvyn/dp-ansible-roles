@@ -1,6 +1,6 @@
 - name: copy a Kafdrop systemd service file
   template:
-    src: ../files/kafdrop.service
+    src: kafdrop.service
     dest: /lib/systemd/system/kafdrop.service
     owner: root
     group: root

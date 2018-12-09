@@ -57,11 +57,15 @@
 
 - name: copy a Hadoop systemd service file
   template:
-    src: hadoop.service.j2
-    dest: /lib/systemd/system/hadoop.service
+    src: "{{ item }}.j2"
+    dest: "/lib/systemd/system/{{ item }}"
     owner: root
     group: root
     mode: 0644
+  with_items:
+     - hdfs-namenode.service
+     - hdfs-datanode.service
+     - hdfs-secondarynamenode.service
   notify:
     - register-autostart-service-hadoop
   when: (hadoop_install_master == true or hadoop_install_worker == true)

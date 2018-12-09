@@ -1,0 +1,56 @@
+---
+- name: configure MySQL bind-address
+  lineinfile:
+      dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+      regexp: ^.*bind-address.*$
+      line: "bind-address     = 0.0.0.0"
+      state: present
+  notify:
+    - restart-service-mysql
+
+- name: create MySQL Hive metastore user
+  mysql_user:
+    name: "{{ hive_metastore_user_name }}"
+    password: "{{ hive_metastore_user_pass }}"
+    priv: '*.*:ALL'
+    state: present
+
+- name: create Hive config directory
+  file:
+    path: "{{ hive_config_dir }}"
+    owner: "{{ hive_os_user_name }}"
+    group: "{{ hive_os_group_name }}"
+    state: directory
+    mode: 0755
+
+- name: copy Hive configuration files
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ hive_config_dir }}/{{ item }}"
+    owner: "{{ hive_os_user_name }}"
+    group: "{{ hive_os_group_name }}"
+  with_items:
+     - hive-site.xml
+  notify:
+    - restart-service-hive
+
+- name: copy Hive systemd service files
+  template:
+    src: "{{ item }}.j2"
+    dest: "/lib/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+     - hive-metastore.service
+     - hive-hiveserver2.service
+  notify:
+    - register-autostart-service-hive
+
+- name: copy Hive environment script for all users
+  template:
+    src: profile.hive.sh.j2
+    dest: /etc/profile.d/hive.sh
+    owner: "root"
+    group: "root"
+    mode: 0777

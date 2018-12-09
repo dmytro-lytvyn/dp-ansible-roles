@@ -1,7 +1,7 @@
 ---
 - name: copy a NiFi systemd service file
   template:
-    src: ../files/nifi.service
+    src: nifi.service
     dest: /lib/systemd/system/nifi.service
     owner: root
     group: root

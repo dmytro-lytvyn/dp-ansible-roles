@@ -1,0 +1,43 @@
+---
+- name: restart-service-mysql
+  service:
+    name: mysql
+    state: restarted
+
+- name: drop-metastore-mysql-database
+  mysql_db:
+    name: metastore
+    state: absent
+  notify:
+    - create-metastore-mysql-database
+
+- name: create-metastore-mysql-database
+  mysql_db:
+    name: metastore
+    state: present
+  notify:
+    - init-mysql-metastore-schema
+
+- name: init-mysql-metastore-schema
+  #shell: "HADOOP_HOME={{ hadoop_link_dir }} && {{ hive_install_dir }}/bin/schematool -dbType mysql -initSchema"
+  shell: mysql --database=metastore --user={{ hive_metastore_user_name }} --password={{ hive_metastore_user_pass }} < hive-schema-2.3.0.mysql.sql
+  #become: yes
+  #become_user: "{{ hive_os_user_name }}"
+  args:
+    chdir: "{{ hive_install_dir }}/scripts/metastore/upgrade/mysql/"
+
+- name: register-autostart-service-hive
+  shell: systemctl enable {{ item }}
+  with_items:
+     - hive-metastore
+     - hive-hiveserver2
+  notify:
+    - restart-service-hive
+
+- name: restart-service-hive
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+     - hive-metastore
+     - hive-hiveserver2

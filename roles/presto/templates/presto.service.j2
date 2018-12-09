@@ -8,6 +8,7 @@ User={{ presto_os_user_name }}
 Group={{ presto_os_group_name }}
 ExecStart={{ presto_link_dir }}/bin/launcher start
 ExecStop={{ presto_link_dir }}/bin/launcher stop
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

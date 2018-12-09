@@ -15,7 +15,7 @@ presto_install_dir: "/opt/presto-server-{{ presto_version }}"
 presto_link_dir: "/opt/presto"
 presto_data_dir: /var/presto/data
 
-presto_os_user_name: "presto"
+presto_os_user_name: "hdfs"
 presto_os_group_name: "{{ presto_os_user_name }}"
 presto_os_user_pass: "encrypted-password-see-ansible-user-module-docs"
 

@@ -130,7 +130,7 @@
 
 - name: apply config for Ambari Server
   template:
-    src: ../files/ambari.properties
+    src: ambari.properties
     dest: /etc/ambari-server/conf/ambari.properties
     owner: root
     group: root
@@ -141,7 +141,7 @@
 
 - name: apply config for Ambari Agent
   template:
-    src: ../files/ambari-agent.ini
+    src: ambari-agent.ini
     dest: /etc/ambari-agent/conf/ambari-agent.ini
     owner: root
     group: root

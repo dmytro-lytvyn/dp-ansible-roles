@@ -1,0 +1,28 @@
+---
+hive_package_mirror: "http://www-eu.apache.org/dist"
+hive_version: "2.3.4"
+
+hive_archive_filename: "apache-hive-{{ hive_version }}-bin.tar.gz"
+hive_archive_url: "{{ hive_package_mirror }}/hive/hive-{{ hive_version }}/{{ hive_archive_filename }}"
+hive_archive_hash_sha256: "ce86d1c20b1004ef76b33feacf40aa7fc03b49de6299c424335fd7f6e875cea4"
+
+hive_unpack_dir: "/opt"
+hive_install_dir: "/opt/apache-hive-{{ hive_version }}-bin"
+hive_config_dir: "{{ hive_install_dir }}/conf"
+hive_link_dir: "/opt/hive"
+
+hive_metastore_host_name: "{{ ansible_fqdn }}"
+hive_metastore_user_name: "hive"
+hive_metastore_user_pass: "hivepass"
+
+mysql_connector_version: "5.1.47"
+mysql_connector_filename: "mysql-connector-java-{{ mysql_connector_version }}.jar"
+mysql_connector_url: "http://central.maven.org/maven2/mysql/mysql-connector-java/{{ mysql_connector_version }}/{{ mysql_connector_filename }}"
+mysql_connector_hash_sha1: "9de4159aaf2d08817a276610b8114a825fca6cfd"
+mysql_connector_install_location: "{{ hive_install_dir }}/lib/mysql-connector-java.jar"
+
+hive_os_user_name: "hdfs"
+hive_os_group_name: "{{ hive_os_user_name }}"
+hive_os_user_pass: "encrypted-password-see-ansible-user-module-docs"
+
+hive_install_metastore: false
