@@ -5,7 +5,7 @@
     path: "/home/{{ hadoop_os_user_name }}/.ssh/id_rsa"
   register: hadoop_ssh_key
 
-- name: register-autostart-service-hadoop
+- name: generate Hadoop SSH key
   shell: ssh-keygen -f /home/{{ hadoop_os_user_name }}/.ssh/id_rsa -N ""
   become: true
   become_user: "{{ hadoop_os_user_name }}"
@@ -13,7 +13,7 @@
     - restart-service-hadoop
   when: hadoop_ssh_key.stat.exists == false
 
-- name: register-autostart-service-hadoop
+- name: copy Hadoop SSH key to authorized_keys
   #shell: ssh-copy-id {{ hadoop_host_name }}
   shell: cat /home/{{ hadoop_os_user_name }}/.ssh/id_rsa.pub >> /home/{{ hadoop_os_user_name }}/.ssh/authorized_keys
   become: true
@@ -38,10 +38,12 @@
     owner: "{{ hadoop_os_user_name }}"
     group: "{{ hadoop_os_group_name }}"
   with_items:
-     - core-site.xml
-     - hdfs-site.xml
      - master
      - workers
+     - core-site.xml
+     - hdfs-site.xml
+     - mapred-site.xml
+     - yarn-site.xml
   notify:
     - restart-service-hadoop
   when: (hadoop_install_master == true or hadoop_install_worker == true)
@@ -66,6 +68,8 @@
      - hdfs-namenode.service
      - hdfs-datanode.service
      - hdfs-secondarynamenode.service
+     - yarn-resourcemanager.service
+     - yarn-nodemanager.service
   notify:
     - register-autostart-service-hadoop
   when: (hadoop_install_master == true or hadoop_install_worker == true)

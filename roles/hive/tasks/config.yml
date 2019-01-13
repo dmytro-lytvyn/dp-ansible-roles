@@ -11,6 +11,7 @@
 - name: create MySQL Hive metastore user
   mysql_user:
     name: "{{ hive_metastore_user_name }}"
+    host: "%"
     password: "{{ hive_metastore_user_pass }}"
     priv: '*.*:ALL'
     state: present

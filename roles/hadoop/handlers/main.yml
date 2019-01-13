@@ -12,6 +12,8 @@
      - hdfs-namenode
      - hdfs-datanode
      - hdfs-secondarynamenode
+     - yarn-resourcemanager
+     - yarn-nodemanager
   notify:
     - restart-service-hadoop
 
@@ -23,3 +25,5 @@
      - hdfs-namenode
      - hdfs-datanode
      - hdfs-secondarynamenode
+     - yarn-resourcemanager
+     - yarn-nodemanager

@@ -6,6 +6,19 @@
 - name: obtain {{ letsencrypt_domain_name }} domain certificate
   shell: ufw disable && certbot certonly --standalone -d {{ letsencrypt_domain_name }} --non-interactive --agree-tos -m {{ letsencrypt_notifications_email }} && ufw --force enable
   when: letsencrypt_cert_obtained.stat.exists == False
-  notify:
-    - generate-truststore-file
+
+- name: generate truststore file
+  shell: openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out {{ letsencrypt_truststore_file_name }} -name {{ letsencrypt_domain_name }} -passout pass:{{ letsencrypt_truststore_passwd }}
+  args:
+    chdir: /etc/letsencrypt/live/{{ letsencrypt_domain_name }}
+  when: letsencrypt_cert_obtained.stat.exists == False
+
+- name: add a crontab job to regenerate truststore after letsencrypt certificates renew for {{ letsencrypt_domain_name }}
+  cron:
+    name: "regenerate truststore after letsencrypt certificates renew for {{ letsencrypt_domain_name }}"
+    month: "*" # 0 0 13 1 * ? (Every month on the 1st, at 13:00)
+    day: "1"
+    hour: "13"
+    minute: "0"
+    job: "cd /etc/letsencrypt/live/{{ letsencrypt_domain_name }} && openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out {{ letsencrypt_truststore_file_name }} -name {{ letsencrypt_domain_name }} -passout pass:{{ letsencrypt_truststore_passwd }}"
 

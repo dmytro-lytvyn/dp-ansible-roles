@@ -7,6 +7,8 @@
     - register-autostart-service-ntp
     - start-service-ntp
 
+# Force time sync: date ; sudo service ntp stop ; sudo ntpdate -s time.nist.gov ; sudo service ntp start ; date
+
 - name: install postgresql and related libraries
   apt:
     name: "{{ item }}"

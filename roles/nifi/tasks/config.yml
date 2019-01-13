@@ -26,13 +26,23 @@
 - name: copy TLS truststore file for NiFi
   copy:
     src: /etc/letsencrypt/live/{{ nifi_domain_name }}/{{ nifi_security_truststore_file_name }}
-    dest:  /opt/nifi-{{ nifi_version }}/conf/{{ nifi_security_truststore_file_name }}
+    dest: /opt/nifi-{{ nifi_version }}/conf/{{ nifi_security_truststore_file_name }}
     remote_src: yes
     owner: "{{ nifi_os_user_name }}"
     group: "{{ nifi_os_user_name }}"
     mode: 0644
   notify:
     - restart-service-nifi
+
+- name: add a crontab job to copy a new truststore for NiFi after letsencrypt certificates renew
+  cron:
+    name: "copy a new truststore for NiFi after letsencrypt certificates renew"
+    month: "*" # 0 0 14 1 * ? (Every month on the 1st, at 14:00)
+    day: "1"
+    hour: "14"
+    minute: "0"
+    job: "cp /etc/letsencrypt/live/{{ nifi_domain_name }}/{{ nifi_security_truststore_file_name }} /opt/nifi-{{ nifi_version }}/conf/{{ nifi_security_truststore_file_name }}"
+
 
 - name: open NiFi API endpoint ports in firewall
   ufw:

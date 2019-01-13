@@ -15,20 +15,21 @@
   loop_control:
     loop_var: letsencrypt_domain_name
 
-- name: add a crontab job to reniew all Let's Encrypt certificates
+- name: add a crontab job to renew all letsencrypt certificates
   cron:
     name: "renew letsencrypt certificates"
-    month: "*" # 0 0 12 1 * ? (Every month on the 1st, at noon)
+    month: "*" # 0 0 12 1 * ? (Every month on the 1st, at 12:00)
     day: "1"
     hour: "12"
     minute: "0"
     job: "ufw disable && certbot renew --non-interactive --agree-tos >> {{ letsencrypt_renew_log_path }} 2>&1 && ufw --force enable"
 # Check certificates expiration with: openssl x509 -noout -dates -in /etc/letsencrypt/live/{{ letsencrypt_domain_name }}/cert.pem
 
-- name: copy a logrotate file to archive logs of certificates reniew
+- name: copy a logrotate file to archive logs of certificates renew
   template:
     src: logrotate_letsencrypt_renew
     dest: /etc/logrotate.d/logrotate_letsencrypt_renew
     owner: root
     group: root
     mode: 0644
+

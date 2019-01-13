@@ -126,7 +126,7 @@
 
 # All services status:
 
-#for srv in nifi confluent schema kafdrop; do systemctl status $srv* --no-pager --full; done
+#for srv in nifi confluent schema kafdrop; do systemctl status $srv* --no-pager --full; done | grep -A 2 "●"
 
 
 - hosts: rogue-2
@@ -235,5 +235,5 @@
 
 # All services status:
 
-#for srv in hdfs hive presto; do systemctl status $srv* --no-pager --full; done
+#for srv in hdfs yarn hive presto; do systemctl status $srv* --no-pager --full; done | grep -A 2 "●"
 
