@@ -132,6 +132,19 @@
 - hosts: rogue-2
   become: true
   roles:
+    - {role: 'letsencrypt-certbot', tags: 'letsencrypt-certbot'}
+  vars:
+    # Configuration
+    letsencrypt_domain_names: '["process.data-platform.example"]' # If you use freemyip.com for domain names, put them here
+    letsencrypt_notifications_email: "username@gmail.com"
+    letsencrypt_truststore_file_name: "truststore.p12"
+    letsencrypt_truststore_passwd: "Password_123"
+    letsencrypt_renew_log_path: "/var/log/letsencrypt_renew.log"
+
+
+- hosts: rogue-2
+  become: true
+  roles:
     - {role: 'java', tags: 'java'}
     - {role: 'hadoop', tags: 'hadoop'}
     - {role: 'hive', tags: 'hive'}
@@ -157,9 +170,9 @@
     hadoop_os_group_name: "{{ hadoop_os_user_name }}"
     hadoop_os_user_pass: "encrypted-password-see-ansible-user-module-docs"
 
-    hadoop_host_name: "{{ ansible_fqdn }}"
-    hadoop_master_host_name: "{{ ansible_fqdn }}"
-    hadoop_worker_host_names: "{{ ansible_fqdn }}"
+    hadoop_host_name: "process.data-platform.example"
+    hadoop_master_host_name: "{{ hadoop_host_name }}"
+    hadoop_worker_host_names: "{{ hadoop_host_name }}"
     hadoop_dfs_replication: 1
 
     hadoop_install_master: true
@@ -179,7 +192,7 @@
     hive_config_dir: "{{ hive_install_dir }}/conf"
     hive_link_dir: "/opt/hive"
 
-    hive_metastore_host_name: "{{ ansible_fqdn }}"
+    hive_metastore_host_name: "process.data-platform.example"
     hive_metastore_user_name: "hive"
     hive_metastore_user_pass: "Password_123"
 
@@ -216,8 +229,8 @@
     presto_os_group_name: "{{ presto_os_user_name }}"
     presto_os_user_pass: "encrypted-password-see-ansible-user-module-docs"
 
-    presto_coordinator_host: "{{ ansible_fqdn }}"
-    presto_hive_metastore_host: "{{ ansible_fqdn }}"
+    presto_coordinator_host: "process.data-platform.example"
+    presto_hive_metastore_host: "{{ hive_metastore_host_name }}"
     presto_hive_allow_drop_table: true
 
     presto_install_coordinator: true
@@ -231,9 +244,30 @@
     presto_http_port: 9090
 
     presto_cluster_name: dataplatform
-    presto_node_id: "{{presto_cluster_name}}-{{ ansible_fqdn }}"
+    presto_node_id: "{{presto_cluster_name}}-{{ presto_coordinator_host }}"
 
 # All services status:
 
 #for srv in hdfs yarn hive presto; do systemctl status $srv* --no-pager --full; done | grep -A 2 "●"
 
+
+- hosts: rogue-2
+  become: true
+  roles:
+    - {role: 'spark', tags: 'spark'}
+  vars:
+    # Spark
+    spark_package_mirror: "http://www-eu.apache.org/dist"
+    spark_version: "2.4.1"
+
+    spark_archive_filename: "spark-{{ spark_version }}-bin-hadoop2.7.tgz"
+    spark_archive_url: "{{ spark_package_mirror }}/spark/spark-{{ spark_version }}/{{ spark_archive_filename }}"
+    spark_archive_hash_sha256: "f721123fea18a03c2b95fbe6f524212a2c1812d8fa9e6edf86468ea030854fd7"
+
+    spark_unpack_dir: "/opt"
+    spark_install_dir: "/opt/spark-{{ spark_version }}-bin-hadoop2.7"
+    spark_link_dir: "/opt/spark"
+
+    spark_os_user_name: "hdfs"
+    spark_os_group_name: "{{ spark_os_user_name }}"
+    spark_os_user_pass: "encrypted-password-see-ansible-user-module-docs"

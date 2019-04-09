@@ -16,7 +16,7 @@
   when: mc_config_dir.stat.exists == False
 
 - name: copy mc config ini file
-  copy:
+  template:
     src: "ini_{{ item.suffix }}"
     dest: "{{ item.home }}/.config/mc/ini"
     owner: "{{ item.user }}"
@@ -28,7 +28,7 @@
   when: mc_config_dir.stat.exists == False
 
 - name: copy mc config panels file
-  copy:
+  template:
     src: "panels.ini"
     dest: "{{ item.home }}/.config/mc/panels.ini"
     owner: "{{ item.user }}"

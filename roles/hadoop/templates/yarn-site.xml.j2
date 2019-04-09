@@ -23,4 +23,20 @@
     <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
     <value>org.apache.hadoop.mapred.ShuffleHandler</value>
   </property>
+  <property>
+    <name>yarn.nodemanager.resource.memory-mb</name>
+    <value>2048</value> <!-- 2 GB -->
+  </property>
+  <property>
+    <name>yarn.scheduler.minimum-allocation-mb</name> <!-- RAM-per-container -->
+    <value>256</value>
+  </property>
+  <property>
+    <name>yarn.scheduler.maximum-allocation-mb</name> <!-- Max RAM-per-container -->
+    <value>2048</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.vmem-pmem-ratio</name> <!-- Max RAM-per-container -->
+    <value>2.1</value>
+  </property>
 </configuration>

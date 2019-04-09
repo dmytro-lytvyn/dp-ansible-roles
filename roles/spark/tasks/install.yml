@@ -1,0 +1,97 @@
+---
+- name: install Scala
+  apt:
+    name: scala
+    state: present
+
+- name: ensure Spark group exists
+  group:
+    name: "{{ spark_os_group_name }}"
+
+- name: ensure Spark user exists
+  user:
+    name: "{{ spark_os_user_name }}"
+    group: "{{ spark_os_group_name }}"
+    shell: /bin/bash
+    password: "{{ spark_os_user_pass }}"
+
+# Download Spark package
+
+- name: calculate the checksum of the downloaded Spark distro if exists
+  stat:
+    path: "{{ spark_unpack_dir }}/{{ spark_archive_filename }}"
+    get_checksum: yes
+    checksum_algorithm: sha256
+  register: spark_distro_local
+
+- name: compare the Spark distro checksum
+  set_fact:
+    force_spark_distro_download: "{{ spark_distro_local.stat.checksum != spark_archive_hash_sha256 }}"
+  when: spark_distro_local.stat.exists
+
+- name: download the Spark distro if needed
+  get_url:
+    url: "{{ spark_archive_url }}"
+    dest: "{{ spark_unpack_dir }}/{{ spark_archive_filename }}"
+    checksum: "sha256:{{ spark_archive_hash_sha256 }}"
+    force:  "{{ force_spark_distro_download | default ('false') }}"
+    timeout: 30
+    owner: "{{ spark_os_user_name }}"
+    group: "{{ spark_os_group_name }}"
+    mode: 0644
+
+- name: check if Spark install directory already exists
+  stat:
+    path: "{{ spark_install_dir }}"
+  register: spark_install_directory
+
+- name: check if Spark submit script already exists
+  stat:
+    path: "{{ spark_install_dir }}/bin/spark-submit"
+  register: spark_submit_script
+
+# Create Spark install directory and unpack the server
+
+- name: create Spark install directory if needed
+  file:
+    path: "{{ spark_install_dir }}"
+    owner: "{{ spark_os_user_name }}"
+    group: "{{ spark_os_group_name }}"
+    state: directory
+    mode: 0755
+
+- name: create Spark bin directory if needed
+  file:
+    path: "{{ spark_install_dir }}/bin"
+    owner: "{{ spark_os_user_name }}"
+    group: "{{ spark_os_group_name }}"
+    state: directory
+    mode: 0755
+
+- name: unpack Spark distro archive
+  unarchive:
+    src: "{{ spark_unpack_dir }}/{{ spark_archive_filename }}"
+    dest: "{{ spark_unpack_dir }}/"
+    remote_src: yes
+    keep_newer: yes
+  when: (spark_install_directory.stat.exists == False or spark_submit_script.stat.exists == False)
+
+# Update Spark install directory owner and create a symlink
+
+- name: recursively set Spark directory owner
+  file:
+    state: directory
+    path: "{{ spark_install_dir }}"
+    owner: "{{ spark_os_user_name }}"
+    group: "{{ spark_os_group_name }}"
+    #mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  when: spark_install_directory.stat.exists == False
+
+- name: create symlink to a generic Spark directory
+  file:
+    src: "{{ spark_install_dir }}"
+    dest: "{{ spark_link_dir }}"
+    state: link
+    owner: "{{ spark_os_user_name }}"
+    group: "{{ spark_os_group_name }}"

@@ -1,0 +1,8 @@
+---
+- name: copy Spark environment script for all users
+  template:
+    src: profile.spark.sh.j2
+    dest: /etc/profile.d/spark.sh
+    owner: "root"
+    group: "root"
+    mode: 0777

@@ -1,0 +1,15 @@
+---
+spark_package_mirror: "http://www-eu.apache.org/dist"
+spark_version: "2.4.0"
+
+spark_archive_filename: "spark-{{ spark_version }}-bin-hadoop2.7.tgz"
+spark_archive_url: "{{ spark_package_mirror }}/spark/spark-{{ spark_version }}/{{ spark_archive_filename }}"
+spark_archive_hash_sha256: "c93c096c8d64062345b26b34c85127a6848cff95a4bb829333a06b83222a5cfa"
+
+spark_unpack_dir: "/opt"
+spark_install_dir: "/opt/spark-{{ spark_version }}-bin-hadoop2.7"
+spark_link_dir: "/opt/spark"
+
+spark_os_user_name: "hdfs"
+spark_os_group_name: "{{ spark_os_user_name }}"
+spark_os_user_pass: "encrypted-password-see-ansible-user-module-docs"
