@@ -57,7 +57,7 @@
     - restart-service-confluent-kafka
 
 - name: register-autostart-service-confluent-schema-registry
-  shell: systemctl enable schema-registry
+  shell: systemctl enable confluent-schema-registry
   notify:
     - restart-service-confluent-schema-registry
 

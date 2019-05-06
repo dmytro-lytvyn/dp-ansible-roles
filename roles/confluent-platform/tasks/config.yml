@@ -1,14 +1,4 @@
 ---
-# Not needed?
-#- name: secrets directory for schema-registry
-#  file:
-#    path: /etc/schema-registry/secrets
-#    state: directory
-#    owner: "{{ confluent_os_user_name }}"
-#    group: "{{ confluent_os_user_name }}"
-#    mode: 0777
-#  when: confluent_platform_install_schema_registry == true
-
 - name: apply config for zookeeper
   template:
     src: zookeeper.properties

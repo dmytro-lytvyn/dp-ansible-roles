@@ -22,7 +22,7 @@
     checksum: "sha256:{{ nifi_archive_hash_sha256 }}"
     force:  "{{ force_nifi_distro_download | default ('false') }}"
     owner: "{{ nifi_os_user_name }}"
-    group: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_group_name }}"
     mode: 0644
 
 - name: check if NiFi distro is unarchived already
@@ -43,7 +43,7 @@
     state: directory
     path: /opt/nifi-{{ nifi_version }}
     owner: "{{ nifi_os_user_name }}"
-    group: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_group_name }}"
     #mode: u=rwX,g=rX,o=rX
     recurse: yes
   when: nifi_distro_unarchived.stat.exists == False
@@ -54,6 +54,6 @@
     dest: /opt/nifi
     state: link
     owner: "{{ nifi_os_user_name }}"
-    group: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_group_name }}"
   notify:
     - restart-service-nifi

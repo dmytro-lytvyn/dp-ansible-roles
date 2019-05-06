@@ -14,7 +14,7 @@
     src: "{{ item }}"
     dest: "/opt/nifi-{{ nifi_version }}/conf/{{ item }}"
     owner: "{{ nifi_os_user_name }}"
-    group: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_group_name }}"
     mode: 0644
   with_items:
      - nifi.properties
@@ -29,8 +29,9 @@
     dest: /opt/nifi-{{ nifi_version }}/conf/{{ nifi_security_truststore_file_name }}
     remote_src: yes
     owner: "{{ nifi_os_user_name }}"
-    group: "{{ nifi_os_user_name }}"
+    group: "{{ nifi_os_group_name }}"
     mode: 0644
+  when: nifi_security_truststore_file_name is defined
   notify:
     - restart-service-nifi
 
@@ -42,6 +43,7 @@
     hour: "14"
     minute: "0"
     job: "cp /etc/letsencrypt/live/{{ nifi_domain_name }}/{{ nifi_security_truststore_file_name }} /opt/nifi-{{ nifi_version }}/conf/{{ nifi_security_truststore_file_name }}"
+  when: nifi_security_truststore_file_name is defined
 
 
 - name: open NiFi API endpoint ports in firewall

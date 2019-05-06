@@ -1,33 +1,37 @@
 ---
 # Installation
-nifi_os_user_name: "nifi"
-nifi_version: "1.7.1"
+nifi_package_mirror: "http://www-eu.apache.org/dist"
+nifi_version: "1.9.2"
+
 nifi_archive_filename: "nifi-{{ nifi_version }}-bin.tar.gz"
-nifi_archive_source: "http://ftp.fau.de/apache/nifi/{{ nifi_version }}/nifi-{{ nifi_version }}-bin.tar.gz"
-nifi_archive_hash_sha256: "14441c02c47541981746adc8a6c5d8759a9bf8324a08bc03c8487b1112e2c515"
+nifi_archive_source: "{{ nifi_package_mirror }}/nifi/{{ nifi_version }}/{{ nifi_archive_filename }}"
+nifi_archive_hash_sha256: "8d50bd1a0408878ab41a5fcd18d179e5a293e7d0280ddbe5098a4627aaacbff1"
+
+nifi_os_user_name: "nifi"
+nifi_os_group_name: "{{ nifi_os_user_name }}"
 
 # Memory config
 nifi_jvm_heap_memory_initial: "512m"
 nifi_jvm_heap_memory_max: "2560m"
 
 # Host/Port config
-nifi_freemyip_domain_name: "something.freemyip.com" # Dynamic IP service, leave undefined if not needed
-nifi_freemyip_domain_token: "something-token" # Dynamic IP service, leave undefined if not needed
+#nifi_freemyip_domain_name: "something.freemyip.com" # Dynamic IP service, leave undefined if not needed
+#nifi_freemyip_domain_token: "something-token" # Dynamic IP service, leave undefined if not needed
 nifi_domain_name: "input.data-platform.example" # If you use freemyip.com for a domain name, put it here
 nifi_listener_port: 8443
 nifi_remote_input_port: 10443
 nifi_cluster_node_protocol_port: 11443
 
 # HTTPS config: we'll use the same truststore (storage of trusted authority certificates) as keystore (client key certificates) because we don't use them for authorization
-nifi_security_truststore_file_name: "truststore.p12"
-nifi_security_truststore_passwd: "Password_123"
+#nifi_security_truststore_file_name: "truststore.p12"
+#nifi_security_truststore_passwd: "Password_123"
 
 # OAuth config
 # https://console.developers.google.com/ -> New Project -> APIs and Services -> Credentials
 # Web application, Authorized redirect URIs: https://{{ nifi_domain_name }}:{{ nifi_listener_port }}/nifi-api/access/oidc/callback
-nifi_oauth_admin_name: "username@gmail.com"
-nifi_oauth_client_id: "1234567890.apps.googleusercontent.com"
-nifi_oauth_client_secret: "OAuthSecret_123"
+#nifi_oauth_admin_name: "username@gmail.com"
+#nifi_oauth_client_id: "1234567890.apps.googleusercontent.com"
+#nifi_oauth_client_secret: "OAuthSecret_123"
 
 # API open ports
-firewall_open_ports: '[1337]' # If you need to expose an external API, leave undefined if not needed
+#firewall_open_ports: '[1337]' # If you need to expose an external API, leave undefined if not needed

@@ -36,11 +36,15 @@
     - {role: 'nifi', tags: 'nifi'}
   vars:
     # Installation
-    nifi_os_user_name: "nifi"
-    nifi_version: "1.7.1"
+    nifi_package_mirror: "http://www-eu.apache.org/dist"
+    nifi_version: "1.9.2"
+
     nifi_archive_filename: "nifi-{{ nifi_version }}-bin.tar.gz"
-    nifi_archive_source: "http://ftp.fau.de/apache/nifi/{{ nifi_version }}/nifi-{{ nifi_version }}-bin.tar.gz"
-    nifi_archive_hash_sha256: "14441c02c47541981746adc8a6c5d8759a9bf8324a08bc03c8487b1112e2c515"
+    nifi_archive_source: "{{ nifi_package_mirror }}/nifi/{{ nifi_version }}/{{ nifi_archive_filename }}"
+    nifi_archive_hash_sha256: "8d50bd1a0408878ab41a5fcd18d179e5a293e7d0280ddbe5098a4627aaacbff1"
+
+    nifi_os_user_name: "nifi"
+    nifi_os_group_name: "{{ nifi_os_user_name }}"
 
     # Memory config
     nifi_jvm_heap_memory_initial: "512m"
@@ -76,12 +80,13 @@
   vars:
     # Installation versions
     confluent_os_user_name: "confluent"
-    confluent_platform_version: "4.1"
-    confluent_platform_scala_version: "2.11"
+    confluent_platform_version: "5.2"
+    confluent_platform_scala_version: "2.12"
 
     # Installation components
-    confluent_platform_install_schema_registry: true
     confluent_platform_install_kafka: true
+    confluent_platform_install_connect_hdfs: true
+    confluent_platform_install_schema_registry: true
 
     # Host/Port config
     schema_registry_freemyip_domain_name: "something-else.freemyip.com" # Dynamic IP service, leave undefined if not needed
