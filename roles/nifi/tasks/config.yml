@@ -1,4 +1,19 @@
 ---
+# http://nifi.apache.org/quickstart.html
+- name: configure Maximum File Handles and Maximum Forked Processes
+  lineinfile:
+      dest: /etc/security/limits.conf
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+      state: present
+  with_items:
+    - { regexp: "^\\*\\W+hard\\W+nofile", line: "*  hard  nofile  50000" }
+    - { regexp: "^\\*\\W+soft\\W+nofile", line: "*  soft  nofile  50000" }
+    - { regexp: "^\\*\\W+hard\\W+nproc",  line: "*  hard  nproc   10000" }
+    - { regexp: "^\\*\\W+soft\\W+nproc",  line: "*  soft  nproc   10000" }
+  notify:
+    - restart-service-nifi
+
 - name: copy a NiFi systemd service file
   template:
     src: nifi.service

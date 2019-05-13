@@ -20,13 +20,13 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
-  when: hortonworks_ambari_server == true
-  notify:
-    - apply-postgres-config
   with_items:
     - { regexp: "^local\\W+all\\W+all", line: "local   all             all                                     md5" }
     - { regexp: "^host\\W+all\\W+all\\W+0.0.0.0/0", line: "host    all             all             0.0.0.0/0               md5" }
     - { regexp: "^host\\W+all\\W+all\\W+::/0", line:      "host    all             all             ::/0                    md5" }
+  when: hortonworks_ambari_server == true
+  notify:
+    - apply-postgres-config
 
 # Postgres users and databases
 

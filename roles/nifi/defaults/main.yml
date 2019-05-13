@@ -18,9 +18,9 @@ nifi_jvm_heap_memory_max: "2560m"
 #nifi_freemyip_domain_name: "something.freemyip.com" # Dynamic IP service, leave undefined if not needed
 #nifi_freemyip_domain_token: "something-token" # Dynamic IP service, leave undefined if not needed
 nifi_domain_name: "input.data-platform.example" # If you use freemyip.com for a domain name, put it here
-nifi_listener_port: 8443
-nifi_remote_input_port: 10443
-nifi_cluster_node_protocol_port: 11443
+nifi_listener_port: 8080
+nifi_remote_input_port: 10000
+nifi_cluster_node_protocol_port: 11000
 
 # HTTPS config: we'll use the same truststore (storage of trusted authority certificates) as keystore (client key certificates) because we don't use them for authorization
 #nifi_security_truststore_file_name: "truststore.p12"
