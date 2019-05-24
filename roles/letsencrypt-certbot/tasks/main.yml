@@ -22,7 +22,7 @@
     day: "1"
     hour: "12"
     minute: "0"
-    job: "ufw disable && certbot renew --non-interactive --agree-tos >> {{ letsencrypt_renew_log_path }} 2>&1 && ufw --force enable"
+    job: "date >> {{ letsencrypt_renew_log_path }}; /usr/sbin/ufw disable; certbot renew --non-interactive --agree-tos >> {{ letsencrypt_renew_log_path }} 2>&1; /usr/sbin/ufw --force enable"
 # Check certificates expiration with: openssl x509 -noout -dates -in /etc/letsencrypt/live/{{ letsencrypt_domain_name }}/cert.pem
 
 - name: copy a logrotate file to archive logs of certificates renew

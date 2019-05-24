@@ -52,7 +52,7 @@
   lineinfile:
       dest: "{{ hadoop_config_dir }}/hadoop-env.sh"
       regexp: ^.*export JAVA_HOME.*$
-      line: "export JAVA_HOME=/usr/lib/jvm/java-8-oracle"
+      line: "export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))"
       state: present
   notify:
     - restart-service-hadoop

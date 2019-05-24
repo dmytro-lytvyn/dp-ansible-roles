@@ -30,7 +30,7 @@
 #    - oracle-java8-unlimited-jce-policy
 #    - oracle-java8-set-default
 
-- name: install Open JDK 8
+- name: install OpenJDK 8
   become: yes
   apt:
     name: "{{item}}"
@@ -38,3 +38,9 @@
   with_items:
     - openjdk-8-jdk
     - ca-certificates-java
+
+- name: remove OpenJDK JRE 11 if installed
+  become: yes
+  apt:
+    name: openjdk-11-jre-*
+    state: absent
