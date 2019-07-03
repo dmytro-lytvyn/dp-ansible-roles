@@ -51,6 +51,25 @@ $ sudo apt update
 $ sudo apt install ansible
 ```
 
+Install Ansible (on Mac OS):
+
+```bash
+# Install Homebrew:
+$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+# Add Local directory to PATH in ~/.bash_profile:
+$ export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+
+# Install Python with Homebrew:
+$ brew install python
+
+# Install Ansible with pip:
+$ pip install --user ansible
+
+# Include Python Local directory to PATH in ~/.bash_profile:
+export PATH="/usr/local/opt/python/libexec/bin:/Users/d.lytvyn/Library/Python/3.7/bin:$PATH" 
+```
+
 Prepare custom config in a separate directory of your choice:
 
 ```bash
