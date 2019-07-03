@@ -64,11 +64,8 @@
 
 - name: install MySQL server
   apt:
-    name: "{{ item }}"
+    name: ['mysql-server','python-mysqldb']
     state: latest
-  with_items:
-    - mysql-server
-    - python-mysqldb
   notify:
     - restart-service-mysql
 

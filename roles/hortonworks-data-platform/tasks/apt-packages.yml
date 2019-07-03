@@ -11,13 +11,8 @@
 
 - name: install postgresql and related libraries
   apt:
-    name: "{{ item }}"
+    name: ['postgresql-{{ hortonworks_postgres_version }}','libpq-dev','python-psycopg2','libpostgresql-jdbc-java']
     state: latest
-  with_items:
-    - postgresql-{{ hortonworks_postgres_version }}
-    - libpq-dev
-    - python-psycopg2
-    - libpostgresql-jdbc-java
     #- mysql-server mysql-client libmysql-java (/usr/share/java/mysql.jar -> /var/lib/ambari-server/resources/mysql-connector-java.jar)
     # vi /etc/mysql/mysql.conf.d/mysqld.cnf
     # bind-address            = 0.0.0.0

@@ -29,7 +29,7 @@
     rule: allow
     src: "{{ hostvars[item].ansible_default_ipv4.address }}"
   when: hostvars[item].ansible_default_ipv4 is defined and hostvars[item].ansible_default_ipv4.address is defined
-  with_items: "{{ groups['data-platform'] }}"
+  with_items: "{{ groups['data_platform'] }}"
 
 - name: copy a bash script to update ufw firewall rule with a dynamic IP
   template:

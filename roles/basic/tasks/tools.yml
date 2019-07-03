@@ -1,11 +1,7 @@
 - name: install tools
   apt:
-    name: "{{ item }}"
+    name: ['htop','screen','curl']
     state: present
-  with_items:
-    - htop
-    - screen
-    - curl
 
 - name: install mc
   apt:

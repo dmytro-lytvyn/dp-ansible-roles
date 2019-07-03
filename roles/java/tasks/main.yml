@@ -22,22 +22,14 @@
 #- name: install Oracle Java 8
 #  become: yes
 #  apt:
-#    name: "{{item}}"
+#    name: ['oracle-java8-installer','ca-certificates','oracle-java8-unlimited-jce-policy','oracle-java8-set-default']
 #    state: latest
-#  with_items:
-#    - oracle-java8-installer
-#    - ca-certificates
-#    - oracle-java8-unlimited-jce-policy
-#    - oracle-java8-set-default
 
 - name: install OpenJDK 8
   become: yes
   apt:
-    name: "{{item}}"
+    name: ['openjdk-8-jdk','ca-certificates-java']
     state: latest
-  with_items:
-    - openjdk-8-jdk
-    - ca-certificates-java
 
 - name: remove OpenJDK JRE 11 if installed
   become: yes

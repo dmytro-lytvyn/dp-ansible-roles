@@ -1,5 +1,5 @@
 ---
-- hosts: data-platform
+- hosts: data_platform
   become: true
   roles:
     - {role: 'basic', tags: 'basic'}
@@ -70,7 +70,7 @@
     nifi_oauth_client_secret: "OAuthSuperSecret"
 
     # API open ports
-    firewall_open_ports: '[1337]' # If you need to expose an external API, leave undefined if not needed
+    firewall_open_ports: ['1337'] # If you need to expose an external API, leave undefined if not needed
 
 
 - hosts: rogue-1

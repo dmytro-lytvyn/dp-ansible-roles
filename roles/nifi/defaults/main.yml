@@ -34,4 +34,4 @@ nifi_cluster_node_protocol_port: 11000
 #nifi_oauth_client_secret: "OAuthSecret_123"
 
 # API open ports
-#firewall_open_ports: '[1337]' # If you need to expose an external API, leave undefined if not needed
+#firewall_open_ports: ['1337'] # If you need to expose an external API, leave undefined if not needed

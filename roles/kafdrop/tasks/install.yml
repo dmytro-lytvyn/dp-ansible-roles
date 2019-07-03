@@ -6,11 +6,8 @@
 - name: install Maven and Git
   become: yes
   apt:
-    name: "{{item}}"
+    name: ['maven','git']
     state: latest
-  with_items:
-    - maven
-    - git
 
 - name: create Kafdrop directory
   file:
