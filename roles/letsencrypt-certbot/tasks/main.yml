@@ -18,8 +18,8 @@
 - name: add a crontab job to renew all letsencrypt certificates
   cron:
     name: "renew letsencrypt certificates"
-    month: "*" # 0 0 12 1 * ? (Every month on the 1st, at 12:00)
-    day: "1"
+    month: "*" # 0 0 12 1 * ? (Every month on the 1st, 10th, 20th, at 12:00)
+    day: "1,10,20"
     hour: "12"
     minute: "0"
     job: "date >> {{ letsencrypt_renew_log_path }}; /usr/sbin/ufw disable; certbot renew --non-interactive --agree-tos >> {{ letsencrypt_renew_log_path }} 2>&1; /usr/sbin/ufw --force enable"

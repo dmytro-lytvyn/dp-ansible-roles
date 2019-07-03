@@ -16,8 +16,8 @@
 - name: add a crontab job to regenerate truststore after letsencrypt certificates renew for {{ letsencrypt_domain_name }}
   cron:
     name: "regenerate truststore after letsencrypt certificates renew for {{ letsencrypt_domain_name }}"
-    month: "*" # 0 0 13 1 * ? (Every month on the 1st, at 13:00)
-    day: "1"
+    month: "*" # 0 0 13 1 * ? (Every month on the 1st, 10th, 20th, at 13:00)
+    day: "1,10,20"
     hour: "13"
     minute: "0"
     job: "cd /etc/letsencrypt/live/{{ letsencrypt_domain_name }} && openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out {{ letsencrypt_truststore_file_name }} -name {{ letsencrypt_domain_name }} -passout pass:{{ letsencrypt_truststore_passwd }}"
