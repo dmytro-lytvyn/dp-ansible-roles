@@ -67,7 +67,7 @@ $ brew install python
 $ pip install --user ansible
 
 # Include Python Local directory to PATH in ~/.bash_profile:
-export PATH="/usr/local/opt/python/libexec/bin:/Users/d.lytvyn/Library/Python/3.7/bin:$PATH" 
+export PATH="~/Library/Python/3.7/bin:/usr/local/opt/python/libexec/bin:$PATH" 
 ```
 
 Prepare custom config in a separate directory of your choice:
