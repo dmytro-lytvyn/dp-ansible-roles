@@ -64,7 +64,7 @@
 
     # OAuth config
     # https://console.developers.google.com/ -> New Project -> APIs and Services -> Credentials
-    # Web application, Authorized redirect URIs: https://{{ nifi_domain_name }}:{{ nifi_listener_port }}/nifi-api/access/oidc/callback
+    # Create OAuth client ID -> Web application, Authorized redirect URIs: https://{{ nifi_domain_name }}:{{ nifi_listener_port }}/nifi-api/access/oidc/callback
     nifi_oauth_admin_name: "username@gmail.com"
     nifi_oauth_client_id: "1234567890.apps.googleusercontent.com"
     nifi_oauth_client_secret: "OAuthSuperSecret"
@@ -131,7 +131,7 @@
 
 # All services status:
 
-#for srv in nifi confluent schema kafdrop; do systemctl status $srv* --no-pager --full; done | grep -A 2 "●"
+#for srv in nifi confluent schema kafdrop; do systemctl status $srv*.service --no-pager --full; done | grep -A 2 "●"
 
 
 - hosts: rogue-2
@@ -253,7 +253,7 @@
 
 # All services status:
 
-#for srv in hdfs yarn hive presto; do systemctl status $srv* --no-pager --full; done | grep -A 2 "●"
+#for srv in hdfs yarn hive presto; do systemctl status $srv*.service --no-pager --full; done | grep -A 2 "●"
 
 
 - hosts: rogue-2

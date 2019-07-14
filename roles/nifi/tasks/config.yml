@@ -52,12 +52,12 @@
 
 - name: add a crontab job to copy a new truststore for NiFi after letsencrypt certificates renew
   cron:
-    name: "copy a new truststore for NiFi after letsencrypt certificates renew"
+    name: "copy a new truststore for NiFi after letsencrypt certificates renew, restart NiFi"
     month: "*" # 0 0 14 1 * ? (Every month on the 1st, 10th, 20th, at 14:00)
     day: "1,10,20"
     hour: "14"
     minute: "0"
-    job: "cp /etc/letsencrypt/live/{{ nifi_domain_name }}/{{ nifi_security_truststore_file_name }} /opt/nifi-{{ nifi_version }}/conf/{{ nifi_security_truststore_file_name }}"
+    job: "cp /etc/letsencrypt/live/{{ nifi_domain_name }}/{{ nifi_security_truststore_file_name }} /opt/nifi-{{ nifi_version }}/conf/{{ nifi_security_truststore_file_name }} && /bin/systemctl restart nifi"
   when: nifi_security_truststore_file_name is defined
 
 
