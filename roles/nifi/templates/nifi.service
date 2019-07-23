@@ -8,6 +8,7 @@ User={{ nifi_os_user_name }}
 Group={{ nifi_os_group_name }}
 ExecStart=/opt/nifi/bin/nifi.sh start
 ExecStop=/opt/nifi/bin/nifi.sh stop
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

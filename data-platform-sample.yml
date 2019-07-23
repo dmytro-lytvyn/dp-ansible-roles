@@ -4,6 +4,7 @@
   roles:
     - {role: 'basic', tags: 'basic'}
     - {role: 'firewall', tags: 'firewall'}
+    - {role: 'unattended-upgrades', tags: 'unattended-upgrades'}
   vars:
     # Basic
     basic_user_name: "username"
@@ -14,6 +15,13 @@
     firewall_dynamic_ip_scipt_path: "/opt/ufw_allow_dynamic_ip.sh"
     firewall_dynamic_ip_config_path: "/opt/home_network_dynamic_ip.conf"
     firewall_dynamic_ip_log_path: "/var/log/ufw_allow_dynamic_ip.log"
+    # Unattended Upgrades
+    upgrades_notification_email: "username@gmail.com"
+    upgrades_notification_only_on_error: "false"
+    upgrades_remove_unused_kernel_packages: "true"
+    upgrades_remove_unused_dependencies: "true"
+    upgrades_automatic_reboot: "true"
+    upgrades_automatic_reboot_time: "02:00"
 
 
 - hosts: rogue-1

@@ -45,6 +45,34 @@
     mode: u=rwX,g=rX,o=
     recurse: yes
 
+# Update services files to auto-restart
+- name: update-service-confluent-zookeeper
+  lineinfile:
+      dest: /lib/systemd/system/confluent-zookeeper.service
+      regexp: ^Restart=.*$
+      line: Restart=on-failure
+      state: present
+  notify:
+    - register-autostart-service-confluent-zookeeper
+
+- name: update-service-confluent-kafka
+  lineinfile:
+      dest: /lib/systemd/system/confluent-kafka.service
+      regexp: ^Restart=.*$
+      line: Restart=on-failure
+      state: present
+  notify:
+    - register-autostart-service-confluent-kafka
+
+- name: update-service-confluent-schema-registry
+  lineinfile:
+      dest: /lib/systemd/system/confluent-schema-registry.service
+      regexp: ^Restart=.*$
+      line: Restart=on-failure
+      state: present
+  notify:
+    - register-autostart-service-confluent-schema-registry
+
 # Register services
 - name: register-autostart-service-confluent-zookeeper
   shell: systemctl enable confluent-zookeeper

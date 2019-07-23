@@ -21,9 +21,11 @@
     - set-var-lib-kafka-owner-kafka
     - set-var-log-kafka-owner-kafka
     - set-var-log-confluent-owner-kafka
+    - update-service-confluent-zookeeper
+    - update-service-confluent-kafka
     - register-autostart-service-confluent-zookeeper
-    - restart-service-confluent-zookeeper
     - register-autostart-service-confluent-kafka
+    - restart-service-confluent-zookeeper
     - restart-service-confluent-kafka
 
 - name: install confluent-control-center
@@ -51,6 +53,7 @@
   when: confluent_platform_install_schema_registry == true
   notify:
     - set-var-log-confluent-owner-schema-registry
+    - update-service-confluent-schema-registry
     - register-autostart-service-confluent-schema-registry
     - restart-service-confluent-schema-registry
 

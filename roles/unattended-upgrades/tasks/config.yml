@@ -1,0 +1,22 @@
+- name: copy apt.conf auto-upgrades file
+  template:
+    src: apt.conf.auto-upgrades
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+
+- name: configure apt.conf unattended-upgrades
+  lineinfile:
+      dest: /etc/apt/apt.conf.d/50unattended-upgrades
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+      state: present
+  with_items:
+    - { regexp: '^.*"\${distro_id}:\${distro_codename}";',          line: "\t\"${distro_id}:${distro_codename}\";" }
+    - { regexp: '^.*"\${distro_id}:\${distro_codename}-security";', line: "\t\"${distro_id}:${distro_codename}-security\";" }
+    - { regexp: '^.*"\${distro_id}ESM:\${distro_codename}";',       line: "\t\"${distro_id}ESM:${distro_codename}\";" }
+    - { regexp: '^.*"\${distro_id}:\${distro_codename}-updates";',  line: "\t\"${distro_id}:${distro_codename}-updates\";" }
+    - { regexp: '^.*Unattended-Upgrade::Mail ".*";',                          line: 'Unattended-Upgrade::Mail "{{ upgrades_notification_email }}";' }
+    - { regexp: '^.*Unattended-Upgrade::MailOnlyOnError ".*";',               line: 'Unattended-Upgrade::MailOnlyOnError "{{ upgrades_notification_only_on_error }}";' }
+    - { regexp: '^.*Unattended-Upgrade::Remove-Unused-Kernel-Packages ".*";', line: 'Unattended-Upgrade::Remove-Unused-Kernel-Packages "{{ upgrades_remove_unused_kernel_packages }}";' }
+    - { regexp: '^.*Unattended-Upgrade::Remove-Unused-Dependencies ".*";',    line: 'Unattended-Upgrade::Remove-Unused-Dependencies "{{ upgrades_remove_unused_dependencies }}";' }
+    - { regexp: '^.*Unattended-Upgrade::Automatic-Reboot ".*";',              line: 'Unattended-Upgrade::Automatic-Reboot "{{ upgrades_automatic_reboot }}";' }
+    - { regexp: '^.*Unattended-Upgrade::Automatic-Reboot-Time ".*";',         line: 'Unattended-Upgrade::Automatic-Reboot-Time "{{ upgrades_automatic_reboot_time }}";' }

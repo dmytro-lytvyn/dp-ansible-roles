@@ -1,0 +1,4 @@
+- name: install unattended-upgrades and mailutils packages
+  apt:
+    name: ['unattended-upgrades','mailutils']
+    state: latest

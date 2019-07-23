@@ -1,0 +1,8 @@
+---
+# Configuration
+upgrades_notification_email: "username@gmail.com"
+upgrades_notification_only_on_error: "false"
+upgrades_remove_unused_kernel_packages: "true"
+upgrades_remove_unused_dependencies: "true"
+upgrades_automatic_reboot: "true"
+upgrades_automatic_reboot_time: "02:00"
