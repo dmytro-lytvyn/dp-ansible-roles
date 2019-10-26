@@ -2,8 +2,10 @@
   apt:
     name: ['htop','screen','curl']
     state: present
+    update_cache: yes
 
 - name: install mc
   apt:
     name: mc
     state: present
+    update_cache: yes

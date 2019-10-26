@@ -19,7 +19,7 @@ else
   OLD_IP=""
 fi
 
-CURRENT_IP=$(host $HOSTNAME | cut -f4 -d' ')
+CURRENT_IP=$(host $HOSTNAME | grep 'has address' | cut -f4 -d' ')
 
 if [ "$CURRENT_IP" = "$OLD_IP" ] ; then
   log "IP address ($CURRENT_IP) has not changed"

@@ -1,7 +1,7 @@
 ---
-- name: apply config for zookeeper
+- name: apply config for kafka zookeeper
   template:
-    src: zookeeper.properties
+    src: kafka-zookeeper.properties
     dest: /etc/kafka/zookeeper.properties
     owner: root
     group: root
@@ -9,6 +9,17 @@
   when: confluent_platform_install_kafka == true
   notify:
     - restart-service-confluent-zookeeper
+    - restart-service-confluent-kafka
+
+- name: apply config for kafka server
+  template:
+    src: kafka-server.properties
+    dest: /etc/kafka/server.properties
+    owner: root
+    group: root
+    mode: 0644
+  when: confluent_platform_install_kafka == true
+  notify:
     - restart-service-confluent-kafka
 
 - name: apply config for schema-registry

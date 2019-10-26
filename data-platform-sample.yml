@@ -9,11 +9,16 @@
     # Basic
     basic_user_name: "username"
     basic_user_pass: "encrypted-password-see-ansible-user-module-docs"
+    #basic_user_ssh_key: "~/.ssh/id_rsa"
+    #basic_user_public_keys:
+    #  - public_keys/user1.pub
+    #  - public_keys/user2.pub
     # Firewall
-    firewall_open_ip_subnets: '["123.123.123.123/32"]'
+    firewall_open_ip_subnets:
+      - "123.123.123.123/32" # Sample subnet
     firewall_dynamic_ip_hostname: "something.freemyip.com" # If you want to allow access from a dynamic IP, otherwise leave undefined
     firewall_dynamic_ip_scipt_path: "/opt/ufw_allow_dynamic_ip.sh"
-    firewall_dynamic_ip_config_path: "/opt/home_network_dynamic_ip.conf"
+    firewall_dynamic_ip_config_path: "/opt/ufw_dynamic_ip.conf"
     firewall_dynamic_ip_log_path: "/var/log/ufw_allow_dynamic_ip.log"
     # Unattended Upgrades
     upgrades_notification_email: "username@gmail.com"
@@ -30,7 +35,9 @@
     - {role: 'letsencrypt-certbot', tags: 'letsencrypt-certbot'}
   vars:
     # Configuration
-    letsencrypt_domain_names: '["input.data-platform.example","schema-registry.data-platform.example"]' # If you use freemyip.com for domain names, put them here
+    letsencrypt_domain_names: # If you use freemyip.com for domain names, put them here
+      - "input.data-platform.example"
+      - "schema-registry.data-platform.example"
     letsencrypt_notifications_email: "username@gmail.com"
     letsencrypt_truststore_file_name: "truststore.p12"
     letsencrypt_truststore_passwd: "Password_123"
@@ -100,6 +107,7 @@
     schema_registry_freemyip_domain_name: "something-else.freemyip.com" # Dynamic IP service, leave undefined if not needed
     schema_registry_freemyip_domain_token: "something-else-token" # Dynamic IP service, leave undefined if not needed
     schema_registry_listener_port: 8081
+    kafka_listener_domain_name: "input.data-platform.example" # If you use freemyip.com for a domain name, put it here
 
     # Environment config
     confluent_schema_registry_zk_port: 2181
@@ -148,7 +156,8 @@
     - {role: 'letsencrypt-certbot', tags: 'letsencrypt-certbot'}
   vars:
     # Configuration
-    letsencrypt_domain_names: '["process.data-platform.example"]' # If you use freemyip.com for domain names, put them here
+    letsencrypt_domain_names: # If you use freemyip.com for domain names, put them here
+      - "process.data-platform.example"
     letsencrypt_notifications_email: "username@gmail.com"
     letsencrypt_truststore_file_name: "truststore.p12"
     letsencrypt_truststore_passwd: "Password_123"

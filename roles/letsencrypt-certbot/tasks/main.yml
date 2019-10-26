@@ -24,8 +24,8 @@
 
 - name: copy a logrotate file to archive logs of certificates renew
   template:
-    src: logrotate_letsencrypt_renew
-    dest: /etc/logrotate.d/logrotate_letsencrypt_renew
+    src: logrotate-letsencrypt_renew
+    dest: /etc/logrotate.d/letsencrypt_renew
     owner: root
     group: root
     mode: 0644

@@ -23,6 +23,7 @@ confluent_platform_install_kafka_python: false
 #schema_registry_freemyip_domain_name: "something-else.freemyip.com" # Dynamic IP service, leave undefined if not needed
 #schema_registry_freemyip_domain_token: "something-else-token" # Dynamic IP service, leave undefined if not needed
 schema_registry_listener_port: 8081
+kafka_listener_domain_name: "input.data-platform.example" # If you use freemyip.com for a domain name, put it here
 
 # Environment config
 confluent_schema_registry_zk_port: 2181

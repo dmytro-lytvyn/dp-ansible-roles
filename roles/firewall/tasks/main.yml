@@ -17,14 +17,14 @@
     - 172.16.0.0/12
     - 192.168.0.0/16
 
-- name: allow all access from the specified network
+- name: allow all access from the specified networks
   ufw:
     rule: allow
     src: "{{ item }}"
   with_items:
     - "{{ firewall_open_ip_subnets }}"
 
-- name: allow all access between the hosts of data platform
+- name: allow all access between the hosts of the group
   ufw:
     rule: allow
     src: "{{ hostvars[item].ansible_default_ipv4.address }}"
@@ -51,8 +51,8 @@
 
 - name: copy a logrotate file to archive logs of updating firewall rules
   template:
-    src: logrotate_ufw_allow_dynamic_ip
-    dest: /etc/logrotate.d/logrotate_ufw_allow_dynamic_ip
+    src: logrotate-ufw_allow_dynamic_ip
+    dest: /etc/logrotate.d/ufw_allow_dynamic_ip
     owner: root
     group: root
     mode: 0644

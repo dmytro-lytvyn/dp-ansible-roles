@@ -7,8 +7,26 @@
 - name: set authorized key for the basic user copying it from the current user
   authorized_key:
     user: "{{ basic_user_name }}"
+    path: "/home/{{ basic_user_name }}/.ssh/authorized_keys" # To fix an issue with the check mode when a use doesn't exist yet
     state: present
     key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+- name: Set up additional authorized keys for the basic user
+  authorized_key:
+    user: "{{ basic_user_name }}"
+    state: present
+    key: "{{ item }}"
+  with_file: "{{ basic_user_public_keys }}"
+  when: basic_user_public_keys is defined
+
+- name: copy user's private SSH key
+  copy:
+    src: "{{ basic_user_ssh_key }}"
+    dest: "/home/{{ basic_user_name }}/.ssh/id_rsa"
+    owner: "{{ basic_user_name }}"
+    group: "{{ basic_user_name }}"
+    mode: 0600
+  when: basic_user_ssh_key is defined
 
 - name: check if passwordless sudo is enabled for user
   stat: path=/etc/sudoers.d/{{ basic_user_name }}

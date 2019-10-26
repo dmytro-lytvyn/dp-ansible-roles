@@ -7,7 +7,7 @@ data-platform.yml
 data-platform.retry
 
 # Config files folder
-config/
+files/
 
 # Photos role folder
 roles/photos/
