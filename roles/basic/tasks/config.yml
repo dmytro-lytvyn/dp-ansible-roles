@@ -1,3 +1,7 @@
+- name: set hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+
 - name: check if mc config directory exists
   stat:
     path: "/home/{{ basic_user_name }}/.config/mc"

@@ -152,8 +152,8 @@ For every consequent run, as a normal user, without a password, applying all rol
 $ ansible-playbook --user=username data-platform.yml
 ```
 
-You can to a test run (without applying any changes) using the parameter --check:
+You can to a test run (without applying any changes) using the parameter --check, optionally with a parameter --diff to see the actual differences:
 
 ```bash
-$ ansible-playbook --user=username data-platform.yml --check
+$ ansible-playbook --user=username data-platform.yml --check --diff
 ```

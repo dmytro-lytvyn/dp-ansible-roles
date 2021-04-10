@@ -4,7 +4,7 @@
   register: letsencrypt_cert_obtained
 
 - name: obtain {{ letsencrypt_domain_name }} domain certificate
-  shell: ufw disable && certbot certonly --standalone -d {{ letsencrypt_domain_name }} --non-interactive --agree-tos -m {{ letsencrypt_notifications_email }} && ufw --force enable
+  shell: "date {{ '; ufw disable' if firewall_open_ip_subnets is defined else '' }}; certbot certonly --standalone -d {{ letsencrypt_domain_name }} --non-interactive --agree-tos -m {{ letsencrypt_notifications_email }} {{ '; ufw --force enable' if firewall_open_ip_subnets is defined else '' }}"
   when: letsencrypt_cert_obtained.stat.exists == False
 
 - name: generate truststore file
