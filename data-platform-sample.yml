@@ -84,6 +84,9 @@
     nifi_oauth_client_id: "1234567890.apps.googleusercontent.com"
     nifi_oauth_client_secret: "OAuthSuperSecret"
 
+    # Properties encryption config, use here a value NiFi generates in nifi.properties after the first start
+    nifi_sensitive_props_key: ""
+
     # API open ports
     firewall_open_ports: # If you need to expose an external API, leave undefined if not needed
       - '1337'
