@@ -6,6 +6,7 @@
     state: latest
 
 # Oracle Java 8
+
 #- name: add webupd8 Oracle Java repo
 #  become: yes
 #  apt_repository:
@@ -25,14 +26,30 @@
 #    name: ['oracle-java8-installer','ca-certificates','oracle-java8-unlimited-jce-policy','oracle-java8-set-default']
 #    state: latest
 
-- name: install OpenJDK 8
+# OpenJDK 8
+
+#- name: install OpenJDK 8
+#  become: yes
+#  apt:
+#    name: ['openjdk-8-jdk','ca-certificates-java']
+#    state: latest
+#
+#- name: remove OpenJDK JRE 11 if installed
+#  become: yes
+#  apt:
+#    name: openjdk-11-jre-*
+#    state: absent
+
+# OpenJDK 11
+
+- name: install OpenJDK 11
   become: yes
   apt:
-    name: ['openjdk-8-jdk','ca-certificates-java']
+    name: ['openjdk-11-jdk','ca-certificates-java']
     state: latest
 
-- name: remove OpenJDK JRE 11 if installed
+- name: remove OpenJDK 8 if installed
   become: yes
   apt:
-    name: openjdk-11-jre-*
+    name: openjdk-8-*
     state: absent

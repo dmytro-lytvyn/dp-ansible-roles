@@ -6,10 +6,16 @@ schema_registry_ui_archive_filename: "schema-registry-ui-{{ schema_registry_ui_v
 schema_registry_ui_archive_source: "https://github.com/Landoop/schema-registry-ui/releases/download/v.{{ schema_registry_ui_version }}/schema-registry-ui-{{ schema_registry_ui_version }}.tar.gz"
 schema_registry_ui_archive_hash_sha256: "ed2e88d0e4d2c3b78ee389d2d1e2a7261b876a193651d1735a64bfdf4ba96a51"
 
-caddy_version: "0.11.0"
+caddy_version: "0.11.5"
 caddy_archive_filename: "caddy_v{{ caddy_version }}_linux_amd64.tar.gz"
-caddy_archive_source: "https://github.com/mholt/caddy/releases/download/v{{ caddy_version }}/caddy_v{{ caddy_version }}_linux_amd64.tar.gz"
-caddy_archive_hash_sha256: "93e77bdbaba0a2b39f9e1de653d17ab1939491f7727948ec65750b4996d07c18"
+caddy_archive_source: "https://github.com/caddyserver/caddy/releases/download/v{{ caddy_version }}/{{ caddy_archive_filename }}"
+caddy_archive_hash_sha256: "d0ca02afdfd895b8e41051518e3f527185ac64ae6c55ca4e8de677b3d92b678b"
+
+# Higher Caddy versions require a new config and didn't work easily for me
+#caddy_version: "2.6.2"
+#caddy_archive_filename: "caddy_{{ caddy_version }}_linux_amd64.tar.gz"
+#caddy_archive_source: "https://github.com/caddyserver/caddy/releases/download/v{{ caddy_version }}/{{ caddy_archive_filename }}"
+#caddy_archive_hash_sha256: "5af0ee65a0220108b7b96322b0418abcda526d5f7fec5afaea029f1aebcca62a"
 
 # Configuration
 schema_registry_domain_name: "schema-registry.data-platform.example" # If you use freemyip.com for a domain name, put it here

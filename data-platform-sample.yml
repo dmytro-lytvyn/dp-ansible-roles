@@ -51,12 +51,12 @@
     - {role: 'nifi', tags: 'nifi'}
   vars:
     # Installation
-    nifi_package_mirror: "http://www-eu.apache.org/dist"
-    nifi_version: "1.9.2"
+    nifi_package_mirror: "https://archive.apache.org/dist"
+    nifi_version: "1.19.0"
 
-    nifi_archive_filename: "nifi-{{ nifi_version }}-bin.tar.gz"
+    nifi_archive_filename: "nifi-{{ nifi_version }}-bin.zip"
     nifi_archive_source: "{{ nifi_package_mirror }}/nifi/{{ nifi_version }}/{{ nifi_archive_filename }}"
-    nifi_archive_hash_sha256: "8d50bd1a0408878ab41a5fcd18d179e5a293e7d0280ddbe5098a4627aaacbff1"
+    nifi_archive_hash_sha256: "54be4c13fa81a3fe4860a728288b79fadc1e122904b19f1279a12017412ebd1a"
 
     nifi_os_user_name: "nifi"
     nifi_os_group_name: "{{ nifi_os_user_name }}"
@@ -85,7 +85,8 @@
     nifi_oauth_client_secret: "OAuthSuperSecret"
 
     # API open ports
-    firewall_open_ports: ['1337'] # If you need to expose an external API, leave undefined if not needed
+    firewall_open_ports: # If you need to expose an external API, leave undefined if not needed
+      - '1337'
 
 
 - hosts: rogue-1
@@ -139,6 +140,12 @@
     caddy_listener_port: 8000
 
     # Kafdrop configuration
+    kafdrop_base_url: "https://github.com/obsidiandynamics/kafdrop/releases/download"
+    kafdrop_version: "1.19.0"
+
+    kafdrop_jar_filename: "kafdrop-{{ kafdrop_version }}.jar"
+    kafdrop_jar_url: "{{ kafdrop_base_url }}/{{ kafdrop_version }}/{{ kafdrop_jar_filename }}"
+
     kafdrop_os_user_name: "kafdrop"
 
     # Environment config

@@ -157,3 +157,9 @@ You can to a test run (without applying any changes) using the parameter --check
 ```bash
 $ ansible-playbook --user=username data-platform.yml --check --diff
 ```
+
+To show the debug output, use -vvv parameter:
+
+```bash
+$ ansible-playbook --user=username data-platform.yml -vvv
+```

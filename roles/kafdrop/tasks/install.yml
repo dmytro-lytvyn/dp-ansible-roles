@@ -22,26 +22,40 @@
     path: /opt/kafdrop/kafdrop.jar
   register: kafdrop_jar_binary
 
-- name: clone Kafdrop repo
-  git:
-    repo: https://github.com/HomeAdvisor/Kafdrop.git
-    dest: /opt/kafdrop/Kafdrop
-  become: yes
-  become_user: "{{ kafdrop_os_user_name }}"
-  when: kafdrop_jar_binary.stat.exists == False
+# Removed the compilation steps as Kafdrop provides a JAR file
 
-- name: build Kafdrop jar binary
-  shell: mvn clean package
-  args:
-    chdir: /opt/kafdrop/Kafdrop/
-  become: yes
-  become_user: "{{ kafdrop_os_user_name }}"
-  when: kafdrop_jar_binary.stat.exists == False
+#- name: clone Kafdrop repo
+#  git:
+#    repo: https://github.com/HomeAdvisor/Kafdrop.git
+#    dest: /opt/kafdrop/Kafdrop
+#  become: yes
+#  become_user: "{{ kafdrop_os_user_name }}"
+#  when: kafdrop_jar_binary.stat.exists == False
+#
+#- name: build Kafdrop jar binary
+#  shell: mvn clean package
+#  args:
+#    chdir: /opt/kafdrop/Kafdrop/
+#  become: yes
+#  become_user: "{{ kafdrop_os_user_name }}"
+#  when: kafdrop_jar_binary.stat.exists == False
+#
+#- name: move compiled Kafdrop jar binary and give it a static name
+#  shell: mv /opt/kafdrop/Kafdrop/target/kafdrop*.jar /opt/kafdrop/kafdrop.jar
+#  become: yes
+#  become_user: "{{ kafdrop_os_user_name }}"
+#  when: kafdrop_jar_binary.stat.exists == False
 
-- name: move compiled Kafdrop jar binary and give it a static name
-  shell: mv /opt/kafdrop/Kafdrop/target/kafdrop*.jar /opt/kafdrop/kafdrop.jar
-  become: yes
-  become_user: "{{ kafdrop_os_user_name }}"
+- name: download the Kafdrop jar binary if needed
+  get_url:
+    url: "{{ kafdrop_jar_url }}"
+    dest: "/opt/kafdrop/kafdrop.jar"
+    #checksum: "sha1:{{ presto_archive_hash_sha1 }}"
+    #force:  "{{ force_presto_distro_download | default ('false') }}"
+    timeout: 30
+    owner: "{{ kafdrop_os_user_name }}"
+    group: "{{ kafdrop_os_user_name }}"
+    mode: 0644
   when: kafdrop_jar_binary.stat.exists == False
 
 - name: copy Kafdrop starter bash script

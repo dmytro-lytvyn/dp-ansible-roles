@@ -1,5 +1,11 @@
 ---
 # Kafdrop configuration
+kafdrop_base_url: "https://github.com/obsidiandynamics/kafdrop/releases/download"
+kafdrop_version: "1.19.0"
+
+kafdrop_jar_filename: "kafdrop-{{ kafdrop_version }}.jar"
+kafdrop_jar_url: "{{ kafdrop_base_url }}/{{ kafdrop_version }}/{{ kafdrop_jar_filename }}"
+
 kafdrop_os_user_name: "kafdrop"
 
 # Environment config

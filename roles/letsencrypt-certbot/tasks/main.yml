@@ -1,6 +1,8 @@
 - name: add Certbot repository
   apt_repository:
-    repo: ppa:certbot/certbot
+    # Unfortunately the repo looks dead, last distro being 19.04 "Disco Dingo", so PPA link won't work with newer distros
+    #repo: ppa:certbot/certbot
+    repo: deb http://ppa.launchpad.net/certbot/certbot/ubuntu disco main
 
 - name: install Certbot package
   apt:
